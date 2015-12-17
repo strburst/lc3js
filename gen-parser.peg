@@ -1,5 +1,5 @@
 // vim: set ft=javascript:
-// This is a PEG.js parser generator template.
+// This is a PEG.js parser generator template
 
 // A program is simply a list of one or more instruction blocks
 Program = InstrBlock+
