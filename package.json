@@ -20,5 +20,9 @@
   "bugs": {
     "url": "https://github.com/strburst/lc3js/issues"
   },
-  "homepage": "https://github.com/strburst/lc3js#readme"
+  "homepage": "https://github.com/strburst/lc3js#readme",
+  "dependencies": {
+    "gulp-peg": "^0.2.0",
+    "gulp-rename": "^1.2.2"
+  }
 }
