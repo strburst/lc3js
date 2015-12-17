@@ -1,0 +1,201 @@
+// vim: set ft=javascript:
+
+Program = InstrBlock+
+
+InstrBlock = '.orig' _ addr:Number Break instructions:(Instruction / Comment)+ '.end' {
+  // Remove all the falsy values (i.e. the null elements from comments)
+  instructions = instructions.filter(function(elem) {
+    return elem;
+  });
+
+  return {
+    address: addr,
+    instructions: instructions
+  };
+}
+
+// Each instruction has an optional label before it or comment after it
+Instruction = _? label:LabelDef? _? instr:(ThreeArgInstr / TwoArgInstr / OneArgInstr / ZeroArgInstr) _? (Break / Comment) {
+  if (label) {
+    instr.label = label;
+  }
+  return instr;
+}
+
+ThreeArgInstr = ADD / AND / LDR / STR
+
+ADD = ADDANDI / ADDANDR
+AND = ADDANDI / ADDANDR
+
+ADDANDI = name:('ADD'i / 'AND'i) _ dest:Register ArgSep sr1:Register ArgSep imm:Number {
+  return {
+    instruction: name.toUpperCase(),
+    destination: dest,
+    source1: sr1,
+    immediate: imm
+  };
+}
+
+ADDANDR = name:('ADD'i / 'AND'i) _ dest:Register ArgSep sr1:Register ArgSep sr2:Register {
+  return {
+    instruction: name.toUpperCase(),
+    destination: dest,
+    source1: sr1,
+    source2: sr2
+  };
+}
+
+LDR = LDRSTR
+STR = LDRSTR
+
+LDRSTR = name:('LDR'i / 'STR'i) _ dest:Register ArgSep base:Register ArgSep offset:Number {
+  return {
+    instruction: name.toUpperCase(),
+    destination: dest,
+    base: base,
+    offset: offset
+  };
+}
+
+TwoArgInstr = LD / LDI / LEA / NOT / ST / STI
+
+LD = DRLABELFROM
+LDI = DRLABELFROM
+LEA = DRLABELFROM
+
+DRLABELFROM = name:('LD'i / 'LDI'i / 'LEA'i) _ dest:Register ArgSep from:Label {
+  return {
+    instruction: name.toUpperCase(),
+    destination: dest,
+    from: from
+  };
+}
+
+NOT = 'NOT'i _ src:Register ArgSep dest:Register {
+  return {
+    instruction: 'NOT',
+    destination: dest,
+    source: src
+  };
+}
+
+ST = DRLABELINTO
+STI = DRLABELINTO
+
+DRLABELINTO = name:('ST'i / 'STI'i) _ dest:Register ArgSep into:Label {
+  return {
+    instruction: name.toUpperCase(),
+    destination: dest,
+    into: into
+  };
+}
+
+// --- One argument instructions ---
+OneArgInstr = BR / JMP / JSR / JSRR // / RTI / TRAP
+
+BR = 'BR'i cc:ConditionCode _ goto:Label {
+  return {
+    instruction: 'BR',
+    conditionCode: cc,
+    goto: goto
+  };
+}
+
+ConditionCode = n:'n'? z:'z'? p:'p'? {
+  if (n || z || p) {
+    return { n: !!n, z: !!z, p: !!p }
+  } else {
+    return { n: true, z: true, p: true }
+  }
+}
+
+JMP = 'JMP'i _ rnum:Register {
+  return {
+    instruction: 'JMP',
+    register: rnum
+  };
+}
+
+JSR = 'JSR'i _ goto:Label {
+  return {
+    instruction: 'JSR',
+    goto: goto
+  };
+}
+
+JSRR = 'JSRR'i _ rnum:Register {
+  return {
+    instruction: 'JSRR',
+    register: rnum
+  };
+}
+
+
+ZeroArgInstr = NOP / RET
+
+// NOP is typically represented as a BR that never activates
+NOP = 'NOP'i {
+  return {
+    instruction: 'BR',
+    conditionCode: {
+      n: false, z: false, p: false
+    }
+  };
+}
+
+// RET is a special case of JMP (i.e. 'JMP R7')
+RET = 'RET'i {
+  return {
+    instruction: 'JMP',
+    register: 7
+  };
+}
+
+// --- Basic definitions ---
+Register = 'R'i n:Number {
+  return n;
+}
+
+Number = HexNumber / DecNumber
+
+DecNumber = digits:[0-9]+ {
+  return parseInt(digits.join(''), 10);
+}
+
+HexNumber = hex:'x' hdigits:[0-9]+ {
+  if (hex) {
+    return parseInt(hdigits.join(''), 16);
+  } else {
+    return n;
+  }
+}
+
+// Comments begin with semicolons and continue until the next line break
+Comment = _? ';' NonBreak? Break {
+  return null;
+}
+
+// Separator between registers (i.e. the comma in 'NOT R1, R1')
+ArgSep 'separator between arguments' = _? ',' _?
+
+_ 'non-break whitespace separator' = [ \t]+
+
+LabelDef = name:Label (_ / Break) {
+  return name;
+}
+
+// A label is any token that is not also an instruction
+Label = !'ADD'i !'AND'i !'BR'i !'JMP'i !'JSR'i !'JSRR'i !'LD'i !'LDR'i !'LEA'i !'NOP'i !'NOT'i !'RET'i !'RTI'i !'ST'i !'STI'i !'STR'i !'TRAP'i token:Token {
+  return token;
+}
+
+// Valid identifiers are made of non-whitespace characters
+Token = token:[^ \t\n\r]+ {
+  return token.join('');
+}
+
+// Anything that's not a line break
+NonBreak = [^\n\r]+
+
+// A line break (dos or unix) or end of input
+Break = [\n\r]+ / !.
