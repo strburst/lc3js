@@ -152,17 +152,17 @@ RET = 'RET'i {
 }
 
 // --- Basic definitions ---
-Register = 'R'i n:Number {
+Register 'register designation' = 'R'i n:DecNumber {
   return n;
 }
 
-Number = HexNumber / DecNumber
+Number 'number (hex or decimal)' = HexNumber / DecNumber
 
-DecNumber = digits:[0-9]+ {
+DecNumber 'number (decimal)' = digits:[0-9]+ {
   return parseInt(digits.join(''), 10);
 }
 
-HexNumber = hex:'x' hdigits:[0-9]+ {
+HexNumber 'number (hex)' = hex:'x' hdigits:[0-9]+ {
   if (hex) {
     return parseInt(hdigits.join(''), 16);
   } else {
