@@ -1,7 +1,10 @@
 // vim: set ft=javascript:
+// This is a PEG.js parser generator template.
 
+// A program is simply a list of one or more instruction blocks
 Program = InstrBlock+
 
+// An instruction block consists of a list of instructions surrounded by the .orig and .end pseudo-ops
 InstrBlock = (Comment / Break / _)* '.orig' _ addr:Number Break instructions:(Instruction / Comment)+ '.end' (Comment / Break / _)* {
   // Remove all the falsy values (i.e. the null elements from comments)
   instructions = instructions.filter(function(elem) {
@@ -15,15 +18,20 @@ InstrBlock = (Comment / Break / _)* '.orig' _ addr:Number Break instructions:(In
 }
 
 // Each instruction has an optional label before it or comment after it
-Instruction = _? label:LabelDef? _? instr:(ThreeArgInstr / TwoArgInstr / OneArgInstr / ZeroArgInstr) _? (Break / Comment) {
+Instruction 'any well-formed instruction' = _? label:LabelDef? _? instr:BaseInstr _? (Break / Comment) {
   if (label) {
     instr.label = label;
   }
   return instr;
 }
 
+// Look for instructions from most to least arguments
+BaseInstr = ThreeArgInstr / TwoArgInstr / OneArgInstr / ZeroArgInstr
+
+// --- Three argument instructions ---
 ThreeArgInstr = ADD / AND / LDR / STR
 
+// ADD and AND have identical arguments
 ADD = ADDANDI / ADDANDR
 AND = ADDANDI / ADDANDR
 
@@ -57,8 +65,10 @@ LDRSTR = name:('LDR'i / 'STR'i) _ dest:Register ArgSep base:Register ArgSep offs
   };
 }
 
+// --- Two argument instructions ---
 TwoArgInstr = LD / LDI / LEA / NOT / ST / STI
 
+// LD, LDI, and LEA have identical arguements
 LD = DRLABELFROM
 LDI = DRLABELFROM
 LEA = DRLABELFROM
@@ -79,6 +89,7 @@ NOT = 'NOT'i _ src:Register ArgSep dest:Register {
   };
 }
 
+// ST and STI have identical arguments
 ST = DRLABELINTO
 STI = DRLABELINTO
 
@@ -171,7 +182,7 @@ HexNumber 'number (hex)' = hex:'x' hdigits:[0-9]+ {
 }
 
 // Comments begin with semicolons and continue until the next line break
-Comment = _? ';' NonBreak? Break {
+Comment 'comment line' = _? ';' NonBreak? Break {
   return null;
 }
 
@@ -180,17 +191,17 @@ ArgSep 'separator between arguments' = _? ',' _?
 
 _ 'non-break whitespace separator' = [ \t]+
 
-LabelDef = name:Label (_ / Break) {
+LabelDef 'label definition' = name:Label (_ / Break) {
   return name;
 }
 
 // A label is any token that is not also an instruction
-Label = !'ADD'i !'AND'i !'BR'i !'JMP'i !'JSR'i !'JSRR'i !'LD'i !'LDR'i !'LEA'i !'NOP'i !'NOT'i !'RET'i !'RTI'i !'ST'i !'STI'i !'STR'i !'TRAP'i token:Token {
+Label 'label token' = !'.' !'ADD'i !'AND'i !'BR'i !'JMP'i !'JSR'i !'JSRR'i !'LD'i !'LDR'i !'LEA'i !'NOP'i !'NOT'i !'RET'i !'RTI'i !'ST'i !'STI'i !'STR'i !'TRAP'i token:Token {
   return token;
 }
 
 // Valid identifiers are made of non-whitespace characters
-Token = token:[^ \t\n\r]+ {
+Token 'non-whitespace identifier' = token:[^ \t\n\r]+ {
   return token.join('');
 }
 
