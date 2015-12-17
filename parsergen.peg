@@ -2,7 +2,7 @@
 
 Program = InstrBlock+
 
-InstrBlock = '.orig' _ addr:Number Break instructions:(Instruction / Comment)+ '.end' {
+InstrBlock = (Comment / Break / _)* '.orig' _ addr:Number Break instructions:(Instruction / Comment)+ '.end' (Comment / Break / _)* {
   // Remove all the falsy values (i.e. the null elements from comments)
   instructions = instructions.filter(function(elem) {
     return elem;
@@ -198,4 +198,4 @@ Token = token:[^ \t\n\r]+ {
 NonBreak = [^\n\r]+
 
 // A line break (dos or unix) or end of input
-Break = [\n\r]+ / !.
+Break 'line breaking whitespace' = [\n\r]+
