@@ -173,7 +173,7 @@ DecNumber 'number (decimal)' = digits:[0-9]+ {
   return parseInt(digits.join(''), 10);
 }
 
-HexNumber 'number (hex)' = hex:'x' hdigits:[0-9]+ {
+HexNumber 'number (hex)' = hex:'x' hdigits:[0-9A-Fa-f]+ {
   if (hex) {
     return parseInt(hdigits.join(''), 16);
   } else {
