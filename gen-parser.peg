@@ -12,7 +12,7 @@ InstrBlock = (Comment / Break / _)* '.orig' _ addr:Number Break instructions:(In
   });
 
   return {
-    address: addr,
+    start: addr,
     instructions: instructions
   };
 }
@@ -25,7 +25,7 @@ Instruction 'any well-formed instruction' = _? label:LabelDef? _? instr:BaseInst
   return instr;
 }
 
-// Look for instructions from most to least arguments
+// Look for instructions from most to least arguments (although this is not important currently)
 BaseInstr = ThreeArgInstr / TwoArgInstr / OneArgInstr / ZeroArgInstr
 
 // --- Three argument instructions ---
@@ -37,7 +37,7 @@ AND = ADDANDI / ADDANDR
 
 ADDANDI = name:('ADD'i / 'AND'i) _ dest:Register ArgSep sr1:Register ArgSep imm:Number {
   return {
-    instruction: name.toUpperCase(),
+    operation: name.toUpperCase(),
     destination: dest,
     source1: sr1,
     immediate: imm
@@ -46,19 +46,20 @@ ADDANDI = name:('ADD'i / 'AND'i) _ dest:Register ArgSep sr1:Register ArgSep imm:
 
 ADDANDR = name:('ADD'i / 'AND'i) _ dest:Register ArgSep sr1:Register ArgSep sr2:Register {
   return {
-    instruction: name.toUpperCase(),
+    operation: name.toUpperCase(),
     destination: dest,
     source1: sr1,
     source2: sr2
   };
 }
 
+// LDR and STR have identical arguments
 LDR = LDRSTR
 STR = LDRSTR
 
 LDRSTR = name:('LDR'i / 'STR'i) _ dest:Register ArgSep base:Register ArgSep offset:Number {
   return {
-    instruction: name.toUpperCase(),
+    operation: name.toUpperCase(),
     destination: dest,
     base: base,
     offset: offset
@@ -75,7 +76,7 @@ LEA = DRLABELFROM
 
 DRLABELFROM = name:('LD'i / 'LDI'i / 'LEA'i) _ dest:Register ArgSep from:Label {
   return {
-    instruction: name.toUpperCase(),
+    operation: name.toUpperCase(),
     destination: dest,
     from: from
   };
@@ -83,7 +84,7 @@ DRLABELFROM = name:('LD'i / 'LDI'i / 'LEA'i) _ dest:Register ArgSep from:Label {
 
 NOT = 'NOT'i _ src:Register ArgSep dest:Register {
   return {
-    instruction: 'NOT',
+    operation: 'NOT',
     destination: dest,
     source: src
   };
@@ -95,7 +96,7 @@ STI = DRLABELINTO
 
 DRLABELINTO = name:('ST'i / 'STI'i) _ dest:Register ArgSep into:Label {
   return {
-    instruction: name.toUpperCase(),
+    operation: name.toUpperCase(),
     destination: dest,
     into: into
   };
@@ -106,7 +107,7 @@ OneArgInstr = BR / JMP / JSR / JSRR // / RTI / TRAP
 
 BR = 'BR'i cc:ConditionCode _ goto:Label {
   return {
-    instruction: 'BR',
+    operation: 'BR',
     conditionCode: cc,
     goto: goto
   };
@@ -116,27 +117,28 @@ ConditionCode = n:'n'? z:'z'? p:'p'? {
   if (n || z || p) {
     return { n: !!n, z: !!z, p: !!p }
   } else {
+    // BR with no condition code is considered an unconditional branch
     return { n: true, z: true, p: true }
   }
 }
 
 JMP = 'JMP'i _ rnum:Register {
   return {
-    instruction: 'JMP',
+    operation: 'JMP',
     register: rnum
   };
 }
 
 JSR = 'JSR'i _ goto:Label {
   return {
-    instruction: 'JSR',
+    operation: 'JSR',
     goto: goto
   };
 }
 
 JSRR = 'JSRR'i _ rnum:Register {
   return {
-    instruction: 'JSRR',
+    operation: 'JSRR',
     register: rnum
   };
 }
@@ -147,7 +149,7 @@ ZeroArgInstr = NOP / RET
 // NOP is typically represented as a BR that never activates
 NOP = 'NOP'i {
   return {
-    instruction: 'BR',
+    operation: 'BR',
     conditionCode: {
       n: false, z: false, p: false
     }
@@ -157,7 +159,7 @@ NOP = 'NOP'i {
 // RET is a special case of JMP (i.e. 'JMP R7')
 RET = 'RET'i {
   return {
-    instruction: 'JMP',
+    operation: 'JMP',
     register: 7
   };
 }
@@ -208,5 +210,5 @@ Token 'non-whitespace identifier' = token:[^ \t\n\r]+ {
 // Anything that's not a line break
 NonBreak = [^\n\r]+
 
-// A line break (dos or unix) or end of input
+// One or more line breaks (dos or unix)
 Break 'line breaking whitespace' = [\n\r]+
