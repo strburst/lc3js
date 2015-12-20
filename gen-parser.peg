@@ -5,8 +5,8 @@
 Program = InstrBlock+
 
 // An instruction block consists of a list of instructions surrounded by the .orig and .end pseudo-ops
-InstrBlock = (Comment / Break / _)* '.orig' _ addr:Number Break instructions:(Instruction / Comment)+ '.end' (Comment / Break / _)* {
-  // Remove all the falsy values (i.e. the null elements from comments)
+InstrBlock = EndLine* '.orig' _ addr:Number EndLine instructions:(Instruction / EndLine)* '.end' EndLine* {
+  // Remove all the falsy values (i.e. the null elements from empty lines/comments)
   instructions = instructions.filter(function(elem) {
     return elem;
   });
@@ -18,7 +18,7 @@ InstrBlock = (Comment / Break / _)* '.orig' _ addr:Number Break instructions:(In
 }
 
 // Each instruction has an optional label before it or comment after it
-Instruction 'any well-formed instruction' = _? label:LabelDef? _? instr:BaseInstr _? (Break / Comment) {
+Instruction 'any well-formed instruction' = _? label:LabelDef? _? instr:BaseInstr _? EndLine {
   if (label) {
     instr.label = label;
   }
@@ -193,7 +193,7 @@ ArgSep 'separator between arguments' = _? ',' _?
 
 _ 'non-break whitespace separator' = [ \t]+
 
-LabelDef 'label definition' = name:Label (_ / Break) {
+LabelDef 'label definition' = name:Label (EndLine+ / _) {
   return name;
 }
 
@@ -209,6 +209,11 @@ Token 'non-whitespace identifier' = token:[^ \t\n\r]+ {
 
 // Anything that's not a line break
 NonBreak = [^\n\r]+
+
+// Lines can end with some optional whitespace and a line break or comment
+EndLine = _? (Break / Comment) {
+    return null;
+}
 
 // One or more line breaks (dos or unix)
 Break 'line breaking whitespace' = [\n\r]+
