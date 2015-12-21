@@ -27,4 +27,4 @@ build/Release
 node_modules
 
 # Compiled parser
-parser.js
+/parser.js
