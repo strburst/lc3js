@@ -38,8 +38,8 @@ AND = ADDANDI / ADDANDR
 ADDANDI = name:('ADD'i / 'AND'i) _ dest:Register ArgSep sr1:Register ArgSep imm:Number {
   return {
     operation: name.toUpperCase(),
-    destination: dest,
-    source1: sr1,
+    destReg: dest,
+    srcReg: sr1,
     immediate: imm
   };
 }
@@ -47,9 +47,9 @@ ADDANDI = name:('ADD'i / 'AND'i) _ dest:Register ArgSep sr1:Register ArgSep imm:
 ADDANDR = name:('ADD'i / 'AND'i) _ dest:Register ArgSep sr1:Register ArgSep sr2:Register {
   return {
     operation: name.toUpperCase(),
-    destination: dest,
-    source1: sr1,
-    source2: sr2
+    destReg: dest,
+    srcReg1: sr1,
+    srcReg2: sr2
   };
 }
 
@@ -60,8 +60,8 @@ STR = LDRSTR
 LDRSTR = name:('LDR'i / 'STR'i) _ dest:Register ArgSep base:Register ArgSep offset:Number {
   return {
     operation: name.toUpperCase(),
-    destination: dest,
-    base: base,
+    destReg: dest,
+    baseReg: base,
     offset: offset
   };
 }
@@ -77,16 +77,16 @@ LEA = DRLABELFROM
 DRLABELFROM = name:('LD'i / 'LDI'i / 'LEA'i) _ dest:Register ArgSep from:Label {
   return {
     operation: name.toUpperCase(),
-    destination: dest,
-    from: from
+    destReg: dest,
+    fromLabel: from
   };
 }
 
 NOT = 'NOT'i _ src:Register ArgSep dest:Register {
   return {
     operation: 'NOT',
-    destination: dest,
-    source: src
+    destReg: dest,
+    srcReg: src
   };
 }
 
@@ -97,8 +97,8 @@ STI = DRLABELINTO
 DRLABELINTO = name:('ST'i / 'STI'i) _ dest:Register ArgSep into:Label {
   return {
     operation: name.toUpperCase(),
-    destination: dest,
-    into: into
+    destReg: dest,
+    intoLabel: into
   };
 }
 
@@ -197,7 +197,7 @@ LabelDef 'label definition' = name:Label (EndLine+ / _) {
   return name;
 }
 
-// A label is any token that is not also an instruction
+// A label is any token that is not also an instruction or pseudo-op
 Label 'label token' = !'.' !'ADD'i !'AND'i !'BR'i !'JMP'i !'JSR'i !'JSRR'i !'LD'i !'LDR'i !'LEA'i !'NOP'i !'NOT'i !'RET'i !'RTI'i !'ST'i !'STI'i !'STR'i !'TRAP'i token:Token {
   return token;
 }
