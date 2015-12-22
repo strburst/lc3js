@@ -5,7 +5,7 @@
 Program = InstrBlock+
 
 // An instruction block consists of a list of instructions surrounded by the .orig and .end pseudo-ops
-InstrBlock = EndLine* '.orig' _ addr:Number EndLine instructions:Labelable* '.end' EndLine* {
+InstrBlock = EndLine? '.orig' _ addr:Number EndLine instructions:Labelable* '.end' EndLine? {
   return {
     start: addr,
     instructions: instructions
@@ -13,7 +13,7 @@ InstrBlock = EndLine* '.orig' _ addr:Number EndLine instructions:Labelable* '.en
 }
 
 // An instruction or pseudo-op, with its associated label and whitespace
-Labelable = _? label:LabelDef? _? instr:(Instruction / PseudoOp) _? EndLine+ {
+Labelable = _? label:LabelDef? _? instr:(Instruction / PseudoOp) _? EndLine {
   if (label) {
     instr.label = label;
   }
@@ -215,7 +215,7 @@ ArgSep 'separator between arguments' = _? ',' _?
 
 _ 'non-break whitespace separator' = [ \t]+
 
-LabelDef 'label definition' = name:Label (EndLine+ / _) {
+LabelDef 'label definition' = name:Label (EndLine / _) {
   return name;
 }
 
@@ -233,7 +233,7 @@ Token 'non-whitespace identifier' = token:[^ \t\n\r]+ {
 NonBreak = [^\n\r]+
 
 // Lines can end with some optional whitespace and a line break or comment
-EndLine = _? (Break / Comment) {
+EndLine = (_? (Break / Comment))+ {
     return null;
 }
 
