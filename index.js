@@ -32,7 +32,7 @@ if (argv['parse-tree']) {  // --parse-tree flag given; output the parse tree
   var inspectOpts = {
     // Color output if outputting to a TTY, or 'color' option explicitly set
     colors: process.stdout.isTTY && argv.color !== 'false' || argv.color === 'true',
-    depth: 3,
+    depth: 4,
   };
 
   console.log(util.inspect(parseTree, inspectOpts));
