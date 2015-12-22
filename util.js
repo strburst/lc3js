@@ -21,7 +21,6 @@ var warningTable = {
 exports.warn = function(warningName) {
   warning = warningTable[warningName];
 
-  console.log('Warning: ' + warning.longName);
-  console.log();
-  console.log(warning.explanation);
+  console.warn('Warning: ' + warning.longName + '\n');
+  console.warn(warning.explanation);
 };
