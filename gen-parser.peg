@@ -5,28 +5,23 @@
 Program = InstrBlock+
 
 // An instruction block consists of a list of instructions surrounded by the .orig and .end pseudo-ops
-InstrBlock = EndLine* '.orig' _ addr:Number EndLine instructions:(Instruction / EndLine)* '.end' EndLine* {
-  // Remove all the falsy values (i.e. the null elements from empty lines/comments)
-  instructions = instructions.filter(function(elem) {
-    return elem;
-  });
-
+InstrBlock = EndLine* '.orig' _ addr:Number EndLine instructions:Labelable* '.end' EndLine* {
   return {
     start: addr,
     instructions: instructions
   };
 }
 
-// Each instruction has an optional label before it or comment after it
-Instruction 'any well-formed instruction' = _? label:LabelDef? _? instr:BaseInstr _? EndLine {
+// An instruction or pseudo-op, with its associated label and whitespace
+Labelable = _? label:LabelDef? _? instr:(Instruction / PseudoOp) _? EndLine+ {
   if (label) {
     instr.label = label;
   }
   return instr;
 }
 
-// Look for instructions from most to least arguments (although this is not important currently)
-BaseInstr = ThreeArgInstr / TwoArgInstr / OneArgInstr / ZeroArgInstr
+// Each instruction has an optional label before it or comment after it
+Instruction 'any well-formed instruction' = ThreeArgInstr / TwoArgInstr / OneArgInstr / ZeroArgInstr
 
 // --- Three argument instructions ---
 ThreeArgInstr = ADD / AND / LDR / STR
@@ -161,6 +156,33 @@ RET = 'RET'i {
   return {
     operation: 'JMP',
     register: 7
+  };
+}
+
+// Although .orig and .end are pseudo-ops, we parse them in InstrBlock instead
+PseudoOp = '.' pseudo:(FILL / BLKW / STRINGZ) {
+  return pseudo;
+}
+
+// --- Pseudo-ops/assembler directives ---
+FILL = 'fill'i _ n:Number {
+  return {
+    pseudoop: '.fill',
+    number: n
+  };
+}
+
+BLKW = 'blkw'i _ cells:Number {
+  return {
+    pseudoop: '.blkw',
+    cells: cells
+  };
+}
+
+STRINGZ = 'stringz'i _ '"' str:NonBreak '"' {
+  return {
+    pseudoop: '.stringz',
+    string: str
   };
 }
 
