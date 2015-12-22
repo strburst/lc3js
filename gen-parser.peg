@@ -82,7 +82,7 @@ DRLABELFROM = name:('LD'i / 'LDI'i / 'LEA'i) _ dest:Register ArgSep from:Label {
   };
 }
 
-NOT = 'NOT'i _ src:Register ArgSep dest:Register {
+NOT = 'NOT'i _ dest:Register ArgSep src:Register {
   return {
     operation: 'NOT',
     destReg: dest,
