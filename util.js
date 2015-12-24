@@ -1,3 +1,26 @@
+var _ = require('underscore');
+
+/**
+ * Return the least and greatest numbers a 2's complement sequence of n bits
+ * can represent.
+ */
+exports.bitRange = _.memoize(function(bits) {
+  var pow = Math.pow(2, bits - 1);
+  return {
+    min: -pow,
+    max: pow - 1
+  };
+});
+
+/**
+ * Test if n can be represented by a 2's complement integer with the given
+ * number of bits.
+ */
+exports.inBitRange = function(n, bits) {
+  var range = exports.bitRange(bits);
+  return n >= range.min && n <= range.max;
+};
+
 var warningTable = {
   'exec data': {
     longName: 'execution of data',
