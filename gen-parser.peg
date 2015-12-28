@@ -133,7 +133,7 @@ JSR = 'JSR'i _ goto:Label {
 
 JSRR = 'JSRR'i _ rnum:Register {
   return {
-    operation: 'JSRR',
+    operation: 'JSR',
     register: rnum
   };
 }
