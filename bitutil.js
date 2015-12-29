@@ -5,15 +5,15 @@
 var truncate = exports.truncate = function(number, numBits) {
   numBits = numBits || 16;
 
-  // A bitstring consisting of exactly numBits ones
-  var ones = Math.pow(2, numBits) - 1;
+  // A bitstring where the first numBits bits are zeroes, and all other bits are ones
+  var zeroes = ~0 << numBits;
 
   if ((1 << (numBits - 1)) & number) {
     // The last bit is set; sign extend the number
-    return number | ~ones;
+    return number | zeroes;
   } else {
     // Clear all the out-of-range higher-order bits
-    return number & ones;
+    return number & ~zeroes;
   }
 };
 
