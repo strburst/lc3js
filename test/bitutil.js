@@ -5,8 +5,10 @@ var bitutil = require('../bitutil.js');
 describe('bit utilities', function() {
   describe('truncate', function() {
     it('shouldn\'t change normal numbers', function() {
-      assert.equal(bitutil.truncate(parseInt('0110', 2), 16), 6, 'case where number wasn\'t truncated');
-      assert.equal(bitutil.truncate(parseInt('1010', 2), 16), 10, 'case where number wasn\'t truncated');
+      assert.equal(bitutil.truncate(parseInt('0110', 2), 16), 6, 'case where number wasn\'t ' +
+          'truncated');
+      assert.equal(bitutil.truncate(parseInt('1010', 2), 16), 10, 'case where number wasn\'t ' +
+          'truncated');
     });
 
     it('should sign extend based on the leading bit', function() {
@@ -15,8 +17,10 @@ describe('bit utilities', function() {
     });
 
     it('should ignore higher order bits', function() {
-      assert.equal(bitutil.truncate(parseInt('10100110', 2), 4), 6, 'case where true leading bit was 0');
-      assert.equal(bitutil.truncate(parseInt('10101010', 2), 4), -6, 'case where true leading bit was 1');
+      assert.equal(bitutil.truncate(parseInt('10100110', 2), 4), 6, 'case where new leading bit ' +
+          'was 0');
+      assert.equal(bitutil.truncate(parseInt('10101010', 2), 4), -6, 'case where new leading bit ' +
+          'was 1');
     });
 
     it('should handle edge cases', function() {

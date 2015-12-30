@@ -4,7 +4,7 @@
 // A program is simply a list of one or more instruction blocks
 Program = InstrBlock+
 
-// An instruction block consists of a list of instructions surrounded by the .orig and .end pseudo-ops
+// An instruction block consists of a list of instructions enclosed by the .orig and .end pseudo-ops
 InstrBlock = EndLine? '.orig' _ addr:Number EndLine instructions:Labelable* '.end' EndLine? {
   return {
     start: addr,
@@ -220,7 +220,8 @@ LabelDef 'label definition' = name:Label (EndLine / _) {
 }
 
 // A label is any token that is not also an instruction or pseudo-op
-Label 'label token' = !'.' !'ADD'i !'AND'i !'BR'i !'JMP'i !'JSR'i !'JSRR'i !'LD'i !'LDR'i !'LEA'i !'NOP'i !'NOT'i !'RET'i !'RTI'i !'ST'i !'STI'i !'STR'i !'TRAP'i token:Token {
+Label 'label token' = !'.' !'ADD'i !'AND'i !'BR'i !'JMP'i !'JSR'i !'JSRR'i !'LD'i !'LDR'i !'LEA'i
+    !'NOP'i !'NOT'i !'RET'i !'RTI'i !'ST'i !'STI'i !'STR'i !'TRAP'i token:Token {
   return token;
 }
 

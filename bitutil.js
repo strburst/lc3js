@@ -1,6 +1,5 @@
 /**
- * Interpret the given number as a 2's complement integer with numBits bits,
- * and get its real value.
+ * Interpret the given number as a 2's complement integer with numBits bits, and get its real value.
  */
 var truncate = exports.truncate = function(number, numBits) {
   numBits = numBits || 16;

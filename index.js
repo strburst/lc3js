@@ -11,7 +11,8 @@ var argv = require('yargs')
   .demand(1, 1, 'Need a file to process')
 
   .option('color', {
-    describe: 'whether to use color output (can be true, false, or default); default is to give color output if writing to a terminal',
+    describe: 'whether to use color output (can be true, false, or default); default is to give ' +
+      'color output if writing to a terminal',
     default: 'default',
     type: 'string'
   })
@@ -25,7 +26,7 @@ var argv = require('yargs')
   .alias('h', 'help')
   .argv;
 
-var fileName = argv._[0]
+var fileName = argv._[0];
 var parseTree = parse(fs.readFileSync(fileName).toString());
 
 if (argv['parse-tree']) {  // --parse-tree flag given; output the parse tree
