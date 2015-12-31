@@ -1,3 +1,5 @@
+var _ = require('underscore');
+
 /**
  * Interpret the given number as a 2's complement integer with numBits bits, and get its real value.
  */
@@ -37,3 +39,18 @@ var fetchBits = exports.fetchBits = function(bits, from, to) {
 var testBit = exports.testBit = function(bits, index) {
   return (bits >> index) & 0x1;
 };
+
+// Construct tables for converting between opcodes and instruction names
+var instructionToOpcode = Object.freeze({
+ 'ADD': 0x1, 'AND': 0x5, 'BR': 0x0, 'JMP': 0xC, 'JSR': 0x4, 'JSRR': 0x4, 'LD': 0x2, 'LDI': 0xA,
+ 'LDR': 0x6, 'LEA': 0xE, 'NOT': 0x9, 'RET': 0xC, 'RTI': 0x8, 'ST': 0x3, 'STI': 0xB, 'STR': 0x7,
+ 'TRAP': 0xF,
+});
+
+var opcodeToInstruction = Object.freeze(_.invert(instructionToOpcode));
+
+var instructionToMask = Object.freeze(_.mapObject(instructionToOpcode, function(opcode) {
+  return opcode << 12;
+}));
+
+var maskToInstruction = Object.freeze(_.invert(instructionToMask));
