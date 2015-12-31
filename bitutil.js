@@ -22,3 +22,18 @@ var truncate = exports.truncate = function(number, numBits) {
 var add = exports.add = function(a, b, numBits) {
   return truncate(a + b, numBits);
 };
+
+/**
+ * Fetch the given range of bits, inclusive, and shift the result so that from is the least
+ * significant bit.
+ */
+var fetchBits = exports.fetchBits = function(bits, from, to) {
+  return (value >> from) & ~(~0 << (to - from + 1));
+};
+
+/**
+ * Fetch only the specified bit. Equivalent to fetchBits(value, bit, bit).
+ */
+var testBit = exports.testBit = function(bits, index) {
+  return (value >> index) & 0x1;
+};
