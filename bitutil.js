@@ -28,12 +28,12 @@ var add = exports.add = function(a, b, numBits) {
  * significant bit.
  */
 var fetchBits = exports.fetchBits = function(bits, from, to) {
-  return (value >> from) & ~(~0 << (to - from + 1));
+  return (bits >> from) & ~(~0 << (to - from + 1));
 };
 
 /**
  * Fetch only the specified bit. Equivalent to fetchBits(value, bit, bit).
  */
 var testBit = exports.testBit = function(bits, index) {
-  return (value >> index) & 0x1;
+  return (bits >> index) & 0x1;
 };
