@@ -54,3 +54,129 @@ var instructionToMask = Object.freeze(_.mapObject(instructionToOpcode, function(
 }));
 
 var maskToInstruction = Object.freeze(_.invert(instructionToMask));
+
+/**
+ * Interpret the given bitstring as an instruction and return an object representation of it.
+ *
+ * This function is memoized, since it's likely to be called on the same bit patterns, e.g. when
+ * executing a loop.
+ */
+var toInstruction = exports.toInstruction = _.memoize(function(bits) {
+  return bitDecoders[opcode(bits)](bits);  // Switch on the operation name
+});
+
+/**
+ * Helper function to fetch the opcode of an instruction.
+ */
+function opcode(bits) {
+  return opcodeToInstruction[(bits >> 12) & 0xF];
+}
+
+var bitDecoders = Object.freeze({
+  'ADD': addAnd('ADD'),
+  'AND': addAnd('AND'),
+  'BR': function(bits) {
+    return {
+      operation: 'BR',
+      conditionCode: {
+        n: !!testBit(bits, 11),
+        z: !!testBit(bits, 10),
+        p: !!testBit(bits, 9)
+      },
+      offset: fetchBits(bits, 0, 8)
+    };
+  },
+  'JMP': function(bits) {
+    return {
+      operation: 'JMP',
+      register: fetchBits(bits, 6, 8)
+    };
+  },
+  'JSR': function(bits) {
+    if (testBit(bits, 11)) {
+      // True JSR
+      return {
+        operation: 'JSR',
+        offset: fetchBits(bits, 0, 10)
+      };
+    } else {
+      // Actually JSRR
+      return {
+        operation: 'JSR',
+        register: fetchBits(bits, 6, 8)
+      };
+    }
+  },
+  'LD': drLabelOffset('LD', 'destReg'),
+  'LDI': drLabelOffset('LDI', 'destReg'),
+  'LDR': ldrStr('LDR'),
+  'LEA': drLabelOffset('LEA', 'destReg'),
+  'NOT': function(bits) {
+    return {
+      operation: 'NOT',
+      destReg: fetchBits(bits, 9, 11),
+      srcReg: fetchBits(bits, 6, 8)
+    };
+  },
+  // Omitted: RTI
+  'ST': drLabelOffset('ST', 'srcReg'),
+  'STI': drLabelOffset('STI', 'srcReg'),
+  'STR': ldrStr('STR'),
+  // Omitted: TRAP
+});
+
+/**
+ * Helper function to parse ADD and AND instructions (their bit layouts are the same).
+ */
+function addAnd(name, bits) {
+  return function(bits) {
+    // ADD/AND instruction: 0001 (opcode) xxx (dr) xxx (sr1) xxxxxx (sr2 or immediate value)
+    if (testBit(bits, 5)) {
+      // Immediate form
+      return {
+        operation: name,
+        destReg: fetchBits(bits, 9, 11),
+        srcReg1: fetchBits(bits, 6, 8),
+        immediate: fetchBits(bits, 0, 4)
+      };
+    } else {
+      // Register form
+      return {
+        operation: name,
+        destReg: fetchBits(bits, 9, 11),
+        srcReg1: fetchBits(bits, 6, 8),
+        srcReg2: fetchBits(bits, 0, 2)
+      };
+    }
+  };
+}
+
+/**
+ * Helper function to parse LD, LDI, LEA, ST, and STI instructions (their bit layouts are the same).
+ */
+function drLabelOffset(name, drOrSr, bits) {
+  // Man I wish I had currying
+  return function(bits) {
+    var acc = {
+      operation: name,
+      offset: fetchBits(bits, 0, 8)
+    };
+    acc[drOrSr] = fetchBits(bits, 9, 11);
+
+    return acc;
+  };
+}
+
+/**
+ * Helper function to parse LDR and STR instructions (their bit layouts are the same).
+ */
+function ldrStr(name, bits) {
+  return function(bits) {
+    return {
+      operation: name,
+      destReg: fetchBits(bits, 9, 11),
+      baseReg: fetchBits(bits, 6, 8),
+      offset: fetchBits(bits, 0, 5)
+    };
+  };
+}
