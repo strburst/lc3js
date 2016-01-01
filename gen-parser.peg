@@ -55,7 +55,7 @@ STR = LDRSTR
 LDRSTR = name:('LDR'i / 'STR'i) _ dest:Register ArgSep base:Register ArgSep offset:Number {
   return {
     operation: name.toUpperCase(),
-    destReg: dest,
+    moveReg: dest,
     baseReg: base,
     offset: offset
   };
@@ -64,16 +64,18 @@ LDRSTR = name:('LDR'i / 'STR'i) _ dest:Register ArgSep base:Register ArgSep offs
 // --- Two argument instructions ---
 TwoArgInstr = LD / LDI / LEA / NOT / ST / STI
 
-// LD, LDI, and LEA have identical arguements
-LD = DRLABELFROM
-LDI = DRLABELFROM
-LEA = DRLABELFROM
+// LD, LDI, LEA, ST, and STI have identical arguements
+LD = REGLABELINSTR
+LDI = REGLABELINSTR
+LEA = REGLABELINSTR
+ST = REGLABELINSTR
+STI = REGLABELINSTR
 
-DRLABELFROM = name:('LD'i / 'LDI'i / 'LEA'i) _ dest:Register ArgSep from:Label {
+REGLABELINSTR = name:('LD'i / 'LDI'i / 'LEA'i / 'ST'i / 'STI'i) _ dest:Register ArgSep from:Label {
   return {
     operation: name.toUpperCase(),
-    destReg: dest,
-    fromLabel: from
+    register: dest,
+    argLabel: from
   };
 }
 
@@ -85,18 +87,6 @@ NOT = 'NOT'i _ dest:Register ArgSep src:Register {
   };
 }
 
-// ST and STI have identical arguments
-ST = DRLABELINTO
-STI = DRLABELINTO
-
-DRLABELINTO = name:('ST'i / 'STI'i) _ dest:Register ArgSep into:Label {
-  return {
-    operation: name.toUpperCase(),
-    destReg: dest,
-    intoLabel: into
-  };
-}
-
 // --- One argument instructions ---
 OneArgInstr = BR / JMP / JSR / JSRR // / RTI / TRAP
 
@@ -104,7 +94,7 @@ BR = 'BR'i cc:ConditionCode _ goto:Label {
   return {
     operation: 'BR',
     conditionCode: cc,
-    goto: goto
+    argLabel: goto
   };
 }
 
@@ -127,7 +117,7 @@ JMP = 'JMP'i _ rnum:Register {
 JSR = 'JSR'i _ goto:Label {
   return {
     operation: 'JSR',
-    goto: goto
+    gotoLabel: goto
   };
 }
 

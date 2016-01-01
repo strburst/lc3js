@@ -65,8 +65,8 @@ describe('parser', function() {
 
         assert.deepEqual(result[0].instructions[0], {
           operation: 'LD',
-          destReg: 0,
-          fromLabel: 'LABEL'
+          register: 0,
+          argLabel: 'LABEL'
         });
       });
     });
@@ -77,7 +77,7 @@ describe('parser', function() {
 
         assert.deepEqual(result[0].instructions[0], {
           operation: 'LDR',
-          destReg: 0,
+          moveReg: 0,
           baseReg: 1,
           offset: 2
         });
@@ -102,8 +102,8 @@ describe('parser', function() {
 
         assert.deepEqual(result[0].instructions[0], {
           operation: 'ST',
-          destReg: 0,
-          intoLabel: 'LABEL'
+          register: 0,
+          argLabel: 'LABEL'
         });
       });
     });
