@@ -10,7 +10,7 @@ describe('parser', function() {
   }
 
   describe('overall structure', function() {
-    it('should parse a single enclosing block properly', function() {
+    it('should parse a single enclosing block', function() {
       var result = parse(wrapCode('NOP'));
 
       assert(Array.isArray(result), 'the overall result is an array of blocks');
@@ -20,7 +20,7 @@ describe('parser', function() {
       assert.equal(result[0].instructions.length, 1, 'block has only one instruction in it');
     });
 
-    it('should parse multiple blocks properly', function() {
+    it('should parse multiple blocks', function() {
       var result = parse('.orig x3000\nNOP\n.end\n.orig x4000\nNOP\n.end');
 
       assert(Array.isArray(result), 'the overall result is an array of blocks');
@@ -35,78 +35,67 @@ describe('parser', function() {
   });
 
   describe('instructions', function() {
-    describe('AND', function() {
-      it('should parse a basic AND instruction properly (immediate form)', function() {
-        var result = parse(wrapCode('AND R0, R1, 2'));
+    it('should parse a basic AND instruction (immediate form)', function() {
+      var result = parse(wrapCode('AND R0, R1, 2'));
 
-        assert.deepEqual(result[0].instructions[0], {
-          operation: 'AND',
-          destReg: 0,
-          srcReg: 1,
-          immediate: 2
-        });
+      assert.deepEqual(result[0].instructions[0], {
+        operation: 'AND',
+        destReg: 0,
+        srcReg: 1,
+        immediate: 2
       });
+    })
 
-      it('should parse a basic AND instruction properly (register form)', function() {
-        var result = parse(wrapCode('AND R0, R1, R2'));
+    it('should parse a basic AND instruction (register form)', function() {
+      var result = parse(wrapCode('AND R0, R1, R2'));
 
-        assert.deepEqual(result[0].instructions[0], {
-          operation: 'AND',
-          destReg: 0,
-          srcReg1: 1,
-          srcReg2: 2
-        });
+      assert.deepEqual(result[0].instructions[0], {
+        operation: 'AND',
+        destReg: 0,
+        srcReg1: 1,
+        srcReg2: 2
       });
     });
 
-    describe('LD', function() {
-      it('should parse a basic LD instruction properly', function() {
-        var result = parse(wrapCode('LD R0, LABEL'));
+    it('should parse a basic LD instruction', function() {
+      var result = parse(wrapCode('LD R0, LABEL'));
 
-        assert.deepEqual(result[0].instructions[0], {
-          operation: 'LD',
-          register: 0,
-          argLabel: 'LABEL'
-        });
+      assert.deepEqual(result[0].instructions[0], {
+        operation: 'LD',
+        register: 0,
+        argLabel: 'LABEL'
       });
     });
 
-    describe('LDR', function() {
-      it('should parse a basic LDR instruction properly', function() {
-        var result = parse(wrapCode('LDR R0, R1, 2'));
+    it('should parse a basic LDR instruction', function() {
+      var result = parse(wrapCode('LDR R0, R1, 2'));
 
-        assert.deepEqual(result[0].instructions[0], {
-          operation: 'LDR',
-          moveReg: 0,
-          baseReg: 1,
-          offset: 2
-        });
+      assert.deepEqual(result[0].instructions[0], {
+        operation: 'LDR',
+        moveReg: 0,
+        baseReg: 1,
+        offset: 2
       });
     });
 
-    describe('NOT', function() {
-      it('should parse a basic NOT instruction properly', function() {
-        var result = parse(wrapCode('NOT R0, R1'));
+    it('should parse a basic NOT instruction', function() {
+      var result = parse(wrapCode('NOT R0, R1'));
 
-        assert.deepEqual(result[0].instructions[0], {
-          operation: 'NOT',
-          destReg: 0,
-          srcReg: 1
-        });
+      assert.deepEqual(result[0].instructions[0], {
+        operation: 'NOT',
+        destReg: 0,
+        srcReg: 1
       });
     });
 
-    describe('ST', function() {
-      it('should parse a basic NOT instruction properly', function() {
-        var result = parse(wrapCode('ST R0, LABEL'));
+    it('should parse a basic NOT instruction', function() {
+      var result = parse(wrapCode('ST R0, LABEL'));
 
-        assert.deepEqual(result[0].instructions[0], {
-          operation: 'ST',
-          register: 0,
-          argLabel: 'LABEL'
-        });
+      assert.deepEqual(result[0].instructions[0], {
+        operation: 'ST',
+        register: 0,
+        argLabel: 'LABEL'
       });
     });
   });
-
 });
