@@ -73,8 +73,8 @@ function opcode(bits) {
 }
 
 var bitDecoders = Object.freeze({
-  'ADD': addAnd('ADD'),
-  'AND': addAnd('AND'),
+  'ADD': srcImmediateDecode('ADD'),
+  'AND': srcImmediateDecode('AND'),
   'BR': function(bits) {
     return {
       operation: 'BR',
@@ -107,10 +107,10 @@ var bitDecoders = Object.freeze({
       };
     }
   },
-  'LD': drLabelOffset('LD', 'destReg'),
-  'LDI': drLabelOffset('LDI', 'destReg'),
-  'LDR': ldrStr('LDR'),
-  'LEA': drLabelOffset('LEA', 'destReg'),
+  'LD': regOffsetDecode('LD'),
+  'LDI': regOffsetDecode('LDI'),
+  'LDR': baseOffsetDecode('LDR'),
+  'LEA': regOffsetDecode('LEA'),
   'NOT': function(bits) {
     return {
       operation: 'NOT',
@@ -119,16 +119,16 @@ var bitDecoders = Object.freeze({
     };
   },
   // Omitted: RTI
-  'ST': drLabelOffset('ST', 'srcReg'),
-  'STI': drLabelOffset('STI', 'srcReg'),
-  'STR': ldrStr('STR'),
+  'ST': regOffsetDecode('ST'),
+  'STI': regOffsetDecode('STI'),
+  'STR': baseOffsetDecode('STR'),
   // Omitted: TRAP
 });
 
 /**
  * Helper function to parse ADD and AND instructions (their bit layouts are the same).
  */
-function addAnd(name, bits) {
+function srcImmediateDecode(name, bits) {
   return function(bits) {
     // ADD/AND instruction: 0001 (opcode) xxx (dr) xxx (sr1) xxxxxx (sr2 or immediate value)
     if (testBit(bits, 5)) {
@@ -154,14 +154,14 @@ function addAnd(name, bits) {
 /**
  * Helper function to parse LD, LDI, LEA, ST, and STI instructions (their bit layouts are the same).
  */
-function drLabelOffset(name, drOrSr, bits) {
+function regOffsetDecode(name, bits) {
   // Man I wish I had currying
   return function(bits) {
     var acc = {
       operation: name,
+      register: fetchBits(bits, 9, 11),
       offset: fetchBits(bits, 0, 8)
     };
-    acc[drOrSr] = fetchBits(bits, 9, 11);
 
     return acc;
   };
@@ -170,7 +170,7 @@ function drLabelOffset(name, drOrSr, bits) {
 /**
  * Helper function to parse LDR and STR instructions (their bit layouts are the same).
  */
-function ldrStr(name, bits) {
+function baseOffsetDecode(name, bits) {
   return function(bits) {
     return {
       operation: name,
