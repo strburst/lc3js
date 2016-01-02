@@ -60,5 +60,35 @@ describe('bit utilities', function() {
       assert.equal(bitutil.testBit(0x2, 5), 0x0, 'index is large than number');
     });
   });
+
+  describe('bitPacker', function() {
+    it('should pack single-bit fields properly', function() {
+      var pack = bitutil.bitPacker([
+          { name: 'a', start: 1, end: 1 },
+          { name: 'b', start: 3, end: 3 },
+          { name: 'c', start: 4, end: 4 },
+          { name: 'd', start: 7, end: 7 },
+      ], parseInt('01100101', 2));
+
+      assert.equal(pack({ a: 1, b: 1, c: 1, d: 1 }), 0xFF);
+      assert.equal(pack({ a: 0, b: 0, c: 1, d: 1 }), 0xF5);
+      assert.equal(pack({ a: 0, b: 0, c: 0, d: 0 }), 0x65);
+    });
+
+    it('should pack beginning/ending ranges properly', function() {
+      var pack = bitutil.bitPacker([
+          { name: 'a', start: 0, end: 4 },
+          { name: 'b', start: 8, end: 12 },
+      ], 0x0F0);
+
+      assert.equal(pack({a: 0xF, b: 0xF}), 0xFFF);
+      assert.equal(pack({a: 0x9, b: 0x9}), 0x9F9);
+      assert.equal(pack({a: 0x0, b: 0x0}), 0x0F0);
+    });
+
+    it('should return initial if fields is empty', function() {
+      assert.equal(bitutil.bitPacker([], 0xDEADBEEF)({}), 0xDEADBEEF);
+    });
+  });
 });
 

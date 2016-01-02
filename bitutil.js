@@ -40,6 +40,22 @@ var testBit = exports.testBit = function(bits, index) {
   return (bits >> index) & 0x1;
 };
 
+/**
+ * Take an array of field objects, with name, start, and end properties (inclusive), and return a
+ * function that bitpacks the properties in the object passed as an argument. initial is the
+ * bitstring to start from; if not given, it is zero.
+ */
+var bitPacker = exports.bitPacker = function(fields, initial) {
+  return function(values) {
+    return fields.reduce(function(acc, field) {
+      var rangeLen = field.end - field.start + 1;
+      var truncated = values[field.name] & ~(~0 << rangeLen);
+
+      return acc | (truncated << field.start);
+    }, initial);
+  };
+};
+
 // Construct tables for converting between opcodes and instruction names
 var instructionToOpcode = Object.freeze({
  'ADD': 0x1, 'AND': 0x5, 'BR': 0x0, 'JMP': 0xC, 'JSR': 0x4, 'JSRR': 0x4, 'LD': 0x2, 'LDI': 0xA,
