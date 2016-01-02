@@ -174,7 +174,7 @@ function ldrStr(name, bits) {
   return function(bits) {
     return {
       operation: name,
-      destReg: fetchBits(bits, 9, 11),
+      moveReg: fetchBits(bits, 9, 11),
       baseReg: fetchBits(bits, 6, 8),
       offset: fetchBits(bits, 0, 5)
     };
