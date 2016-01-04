@@ -22,9 +22,6 @@
   },
   "homepage": "https://github.com/strburst/lc3js#readme",
   "dependencies": {
-    "gulp-peg": "^0.2.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-util": "^3.0.7",
     "underscore": "^1.8.3",
     "yargs": "^3.31.0"
   },
@@ -32,6 +29,9 @@
     "eslint": "^1.10.3",
     "eslint-config-airbnb": "^2.1.1",
     "gulp-eslint": "^1.1.1",
+    "gulp-peg": "^0.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-util": "^3.0.7",
     "mocha": "^2.3.4"
   }
 }
