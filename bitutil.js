@@ -41,6 +41,14 @@ var testBit = exports.testBit = function(bits, index) {
 };
 
 /**
+ * Construct an integer from the sequence of bits given as strings. Ideal for writing out strings of
+ * bits for clarity.
+ */
+var fromBits = exports.fromBits = function() {
+  return parseInt(Array.prototype.join.call(arguments, ''), 2);
+};
+
+/**
  * Take an array of field objects, with name, start, and end properties (inclusive), and return a
  * function that bitpacks the properties in the object passed as an argument. initial is the
  * bitstring to start from; if not given, it is zero.
