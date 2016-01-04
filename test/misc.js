@@ -36,7 +36,7 @@ describe('miscellaneous utilities', function() {
       }, [
         { name: 'Alice', item: 'cookies', type: 'with sauce', quantity: 12 },
         { name: 'Bob', item: 'muffins', type: 'with butter', quantity: 5 },
-        { name: 'Carol', item: 'muffins', type: 'with sauce',  quantity: 7 },
+        { name: 'Carol', item: 'muffins', type: 'with sauce', quantity: 7 },
         { name: 'Dave', item: 'muffins', type: 'with butter', quantity: 6 },
       ]), {
         'cookies with sauce': [
@@ -47,7 +47,7 @@ describe('miscellaneous utilities', function() {
           { name: 'Dave', item: 'muffins', type: 'with butter', quantity: 6 },
         ],
         'muffins with sauce': [
-          { name: 'Carol', item: 'muffins', type: 'with sauce',  quantity: 7 },
+          { name: 'Carol', item: 'muffins', type: 'with sauce', quantity: 7 },
         ],
       });
     });

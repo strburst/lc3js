@@ -3,7 +3,6 @@ var assert = require('assert');
 var parse = require('../parser.js').parse;
 
 describe('parser', function() {
-
   /** Wrap code in boilerplate .orig and .end pseudo-ops. */
   function wrapCode(code) {
     return '.orig x3000\n' + code + '\n.end';
@@ -42,9 +41,9 @@ describe('parser', function() {
         operation: 'AND',
         destReg: 0,
         srcReg: 1,
-        immediate: 2
+        immediate: 2,
       });
-    })
+    });
 
     it('should parse a basic AND instruction (register form)', function() {
       var result = parse(wrapCode('AND R0, R1, R2'));
@@ -53,7 +52,7 @@ describe('parser', function() {
         operation: 'AND',
         destReg: 0,
         srcReg1: 1,
-        srcReg2: 2
+        srcReg2: 2,
       });
     });
 
@@ -63,7 +62,7 @@ describe('parser', function() {
       assert.deepEqual(result[0].instructions[0], {
         operation: 'LD',
         register: 0,
-        argLabel: 'LABEL'
+        argLabel: 'LABEL',
       });
     });
 
@@ -74,7 +73,7 @@ describe('parser', function() {
         operation: 'LDR',
         moveReg: 0,
         baseReg: 1,
-        offset: 2
+        offset: 2,
       });
     });
 
@@ -84,7 +83,7 @@ describe('parser', function() {
       assert.deepEqual(result[0].instructions[0], {
         operation: 'NOT',
         destReg: 0,
-        srcReg: 1
+        srcReg: 1,
       });
     });
 
@@ -94,7 +93,7 @@ describe('parser', function() {
       assert.deepEqual(result[0].instructions[0], {
         operation: 'ST',
         register: 0,
-        argLabel: 'LABEL'
+        argLabel: 'LABEL',
       });
     });
   });

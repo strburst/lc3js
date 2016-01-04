@@ -83,9 +83,9 @@ describe('bit utilities', function() {
           { name: 'b', start: 8, end: 12 },
       ], 0x0F0);
 
-      assert.equal(pack({a: 0xF, b: 0xF}), 0xFFF);
-      assert.equal(pack({a: 0x9, b: 0x9}), 0x9F9);
-      assert.equal(pack({a: 0x0, b: 0x0}), 0x0F0);
+      assert.equal(pack({ a: 0xF, b: 0xF }), 0xFFF);
+      assert.equal(pack({ a: 0x9, b: 0x9 }), 0x9F9);
+      assert.equal(pack({ a: 0x0, b: 0x0 }), 0x0F0);
     });
 
     it('should return initial if fields is empty', function() {
@@ -113,7 +113,7 @@ describe('bit utilities', function() {
         operation: 'ADD',
         destReg: 6,
         srcReg1: 1,
-        srcReg2: 2
+        srcReg2: 2,
       },
     },
     {
@@ -122,7 +122,7 @@ describe('bit utilities', function() {
         operation: 'ADD',
         destReg: 5,
         srcReg1: 1,
-        immediate: 21
+        immediate: 21,
       },
     },
     {
@@ -131,7 +131,7 @@ describe('bit utilities', function() {
         operation: 'AND',
         destReg: 6,
         srcReg1: 1,
-        srcReg2: 2
+        srcReg2: 2,
       },
     },
     {
@@ -140,7 +140,7 @@ describe('bit utilities', function() {
         operation: 'AND',
         destReg: 5,
         srcReg1: 1,
-        immediate: 21
+        immediate: 21,
       },
     },
   ];

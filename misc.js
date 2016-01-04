@@ -1,3 +1,4 @@
+/* eslint no-console:0 */
 var _ = require('underscore');
 
 /**
@@ -7,7 +8,7 @@ exports.bitRange = _.memoize(function(bits) {
   var pow = Math.pow(2, bits - 1);
   return {
     min: -pow,
-    max: pow - 1
+    max: pow - 1,
   };
 });
 
@@ -52,24 +53,24 @@ exports.distinctMap = function(fKey, objects, purge) {
 var warningTable = {
   'exec data': {
     longName: 'execution of data',
-    explanation: 'A memory cell previously marked as an instruction has been executed.'
+    explanation: 'A memory cell previously marked as an instruction has been executed.',
   },
 
   'self-modifying': {
     longName: 'self-modifying code',
     explanation: 'A memory cell previously marked as an instruction has been modified by the ' +
-      'program.'
+      'program.',
   },
 
   'read uninitd': {
     longName: 'reading uninitialized memory',
     explanation: 'A memory cell whose value was not previously set by the program or implicitly ' +
-      'defined as a service routine has been read.'
-  }
+      'defined as a service routine has been read.',
+  },
 };
 
 exports.warn = function(warningName) {
-  warning = warningTable[warningName];
+  var warning = warningTable[warningName];
 
   console.warn('Warning: ' + warning.longName + '\n');
   console.warn(warning.explanation);

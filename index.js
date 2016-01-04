@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint no-console:0 */
 
 var fs = require('fs');
 var util = require('util');
@@ -14,12 +15,12 @@ var argv = require('yargs')
     describe: 'whether to use color output (can be true, false, or default); default is to give ' +
       'color output if writing to a terminal',
     default: 'default',
-    type: 'string'
+    type: 'string',
   })
 
   .option('parse-tree', {
     describe: 'output the parse tree instead of compiled Javascript',
-    type: 'boolean'
+    type: 'boolean',
   })
 
   .help('h')
