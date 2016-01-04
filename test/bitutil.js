@@ -178,7 +178,7 @@ describe('bit utilities', function() {
     _.keys(assemblerCases).forEach(function(operation) {
       it('should assemble ' + operation + ' instructions', function() {
         assemblerCases[operation].forEach(function(testCase) {
-          assert.deepEqual(bitutil.toInstruction(testCase.binary), testCase.object);
+          assert.deepEqual(bitutil.toBits(testCase.object, nextAddr, labelToAddr), testCase.binary);
         });
       });
     });
