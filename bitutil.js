@@ -196,3 +196,118 @@ function baseOffsetDecode(name, bits) {
     };
   };
 }
+
+/**
+ * Convert an object representation of an instruction (as returned by the parser) to a bitstring.
+ * If the current instruction doesn't use labels/offsets, nextAddr and labelToAddr are unused. If
+ * labelToAddr doesn't contain a label referenced this instruction, return null.
+ *
+ * nextAddr refers to the addres of the instruction after this one. In LC-3 assembly, all offsets
+ * are relative to the already-incremented program counter.
+ */
+var toBits = exports.toBits = function(instruction, nextAddr, labelToAddr) {
+  return bitEncoders[instruction.operation](instruction, nextAddr, labelToAddr);
+};
+
+var bitEncoders = Object.freeze({
+  'ADD': srcImmediateEncode('ADD'),
+  'AND': srcImmediateEncode('AND'),
+  'BR': function() {
+    // Wrapping ensures that bitPacker only generates a new function once
+    var packConditionCode = bitPacker([
+      { name: 'n', start: 11, end: 11 },
+      { name: 'z', start: 10, end: 10 },
+      { name: 'p', start: 9, end: 9 },
+    ], instructionToMask.BR);
+
+    return function(instruction, nextAddr, labelToAddr) {
+      if (!labelToAddr[instruction.gotoLabel]) {
+        return null;
+      }
+
+      var cc = packConditionCode(instruction.conditionCode);
+      var offset = labelToAddr[instruction.gotoLabel] - nextAddr;
+
+      return cc | offset;
+    };
+  }(),
+  'JMP': bitPacker([
+      { name: 'register', start: 6, end: 8 }
+  ], instructionToMask.JMP),
+  'JSR': function() {
+    var packJSRR = bitPacker([
+        { name: 'register', start: 6, end: 8 }
+    ], instructionToMask.JSR);
+
+    return function(instruction, nextAddr, labelToAddr) {
+      if (instruction.register) {
+        return packJSRR(instruction);
+      } else if (!labelToAddr[instruction.gotoLabel]) {
+        return null;
+      } else {
+        var offset = labelToAddr[instruction.gotoLabel] - nextAddr;
+        return instructionToMask.JSR | (1 << 11) | offset;
+      }
+    };
+  },
+  'LD': regLabelEncode('LD'),
+  'LDI': regLabelEncode('LDI'),
+  'LDR': baseOffsetEncode('LDR'),
+  'LEA': regLabelEncode('LEA'),
+  'NOT': bitPacker([
+      { name: 'destReg', start: 9, end: 11 },
+      { name: 'srcReg', start: 6, end: 8 },
+  ], instructionToMask.NOT | ~(~0 << 6)),
+  // Omitted: RTI
+  'ST': regLabelEncode('ST'),
+  'STI': regLabelEncode('STI'),
+  'STR': baseOffsetEncode('STR'),
+  // Omitted: TRAP
+});
+
+/**
+ * Helper function to assemble ADD and AND instructions (their bit layouts are the same).
+ */
+function srcImmediateEncode(name) {
+  var packRegisterForm = bitPacker([
+      { name: 'destReg', start: 9, end: 11 },
+      { name: 'srcReg1', start: 6, end: 8 },
+      { name: 'srcReg2', start: 0, end: 2 },
+  ], instructionToMask[name]);
+
+  var packImmediateForm = bitPacker([
+      { name: 'destReg', start: 9, end: 11 },
+      { name: 'srcReg', start: 6, end: 8 },
+      { name: 'immediate', start: 0, end: 4 },
+  ], instructionToMask[name] | (1 << 5));
+
+  return function(instruction) {
+    if (instruction.immediate) {
+      return packImmediateForm(instruction);
+    } else {
+      return packRegisterForm(instruction);
+    }
+  };
+}
+
+/**
+ * Helper function to assemble LD, LDI, LEA, ST, and STI instructions (their bit layouts are the
+ * same).
+ */
+function regLabelEncode(name) {
+  return function(instruction, nextAddr, labelToAddr) {
+    var offset = labelToAddr[instruction.argLabel] - nextAddr;
+    return instructionToMask[name] | instruction.moveReg | offset;
+  };
+}
+
+/**
+ * Helper function to assemble LDR, and STR instructions (their bit layouts are the same).
+ */
+function baseOffsetEncode(name) {
+  return bitPacker([
+      { name: 'moveReg', start: 9, end: 11 },
+      { name: 'baseReg', start: 6, end: 8 },
+      { name: 'offset', start: 0, end: 5 },
+  ], instructionToMask[name]);
+}
