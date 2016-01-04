@@ -1,6 +1,8 @@
 var assert = require('assert');
+var _ = require('underscore');
 
 var bitutil = require('../bitutil.js');
+var misc = require('../misc.js');
 
 describe('bit utilities', function() {
   describe('truncate', function() {
@@ -90,5 +92,95 @@ describe('bit utilities', function() {
       assert.equal(bitutil.bitPacker([], 0xDEADBEEF)({}), 0xDEADBEEF);
     });
   });
-});
 
+  // In toBits, pass these parameters in every test (thus all offsets will be 0xAA)
+  var nextAddr = 0x4000;
+  var labelToAddr = { ARGLABEL: 0x40AA };
+
+  // Test cases for assembly and dissasembly
+  var assemblerCases = [
+    {
+      binary: 0,
+      object: {
+        operation: 'BR',
+        conditionCode: { n: false, z: false, p: false },
+        offset: 0
+      },
+    },
+    {
+      binary: bitutil.fromBits('0001', '110', '001', '0', '00', '010'),
+      object: {
+        operation: 'ADD',
+        destReg: 6,
+        srcReg1: 1,
+        srcReg2: 2
+      },
+    },
+    {
+      binary: bitutil.fromBits('0001', '101', '001', '1', '10101'),
+      object: {
+        operation: 'ADD',
+        destReg: 5,
+        srcReg1: 1,
+        immediate: 21
+      },
+    },
+    {
+      binary: bitutil.fromBits('0101', '110', '001', '0', '00', '010'),
+      object: {
+        operation: 'AND',
+        destReg: 6,
+        srcReg1: 1,
+        srcReg2: 2
+      },
+    },
+    {
+      binary: bitutil.fromBits('0101', '101', '001', '1', '10101'),
+      object: {
+        operation: 'AND',
+        destReg: 5,
+        srcReg1: 1,
+        immediate: 21
+      },
+    },
+  ];
+
+  // Sort individual test cases by operation tested
+  assemblerCases = misc.distinctMap(function(item) {
+    return item.object.operation;
+  }, assemblerCases);
+
+  // These instructions take labels as arguments
+  var argLabelOps = { BR: true, JSR: true, LD: true, LEA: true, ST: true, STI: true };
+
+  // Annotate test cases using instructions that have a label argument with a label
+  _.keys(assemblerCases).forEach(function(operation) {
+    if (argLabelOps[operation]) {
+      assemblerCases[operation].forEach(function(testCase) {
+        testCase.argLabel = 'ARGLABEL';
+      });
+    }
+  });
+
+  describe('toInstruction', function() {
+    // Test dissassembly for all the previously defined cases
+    _.keys(assemblerCases).forEach(function(operation) {
+      it('should disassemble ' + operation + ' instructions', function() {
+        assemblerCases[operation].forEach(function(testCase) {
+          assert.deepEqual(bitutil.toInstruction(testCase.binary), testCase.object);
+        });
+      });
+    });
+  });
+
+  describe('toBits', function() {
+    // Test assembly for all the previously defined cases
+    _.keys(assemblerCases).forEach(function(operation) {
+      it('should assemble ' + operation + ' instructions', function() {
+        assemblerCases[operation].forEach(function(testCase) {
+          assert.deepEqual(bitutil.toInstruction(testCase.binary), testCase.object);
+        });
+      });
+    });
+  });
+});
