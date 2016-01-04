@@ -1,0 +1,21 @@
+env:
+  browser: true
+  mocha: true
+  node: true
+
+extends:
+  "airbnb/legacy"
+
+rules:
+  # Disable required naming of anonymous functions
+  func-names: 0
+  # Allow the if (...) { return ... } else { return ... } pattern
+  no-else-return: 0
+  # Allow global variables and arguments to be unused
+  no-unused-vars: [1, {"vars": "local", "args": "none"}]
+  # Allow reassignment parameters
+  no-param-reassign: 0
+  # Disallow spaces after the function keyword
+  space-before-function-paren: [2, "never"]
+  # Allow var declarations to be anywhere in a function
+  vars-on-top: 0

@@ -1,3 +1,4 @@
+var eslint = require('gulp-eslint');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var peg = require('gulp-peg');
@@ -10,4 +11,11 @@ gulp.task('compile-parser', function() {
     .pipe(gulp.dest('.'));
 });
 
-gulp.task('default', ['compile-parser']);
+gulp.task('lint', function() {
+  return gulp.src(['**/*.js', '!parser.js', '!node_modules/**'])
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
+});
+
+gulp.task('default', ['compile-parser', 'lint']);
