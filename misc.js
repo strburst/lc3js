@@ -19,6 +19,36 @@ exports.inBitRange = function(n, bits) {
   return n >= range.min && n <= range.max;
 };
 
+/**
+ * Create a new object that sorts the given array of objects by all the distinct values that the
+ * key fKey has. If purge is truthy, also remove the given key from all objects.
+ *
+ * Note that all objects are shallow copied into the new map.
+ *
+ * If the given key is a function, evaluate the function and use that as if it were the result of
+ * the key lookup instead. (purge will be ignored in this case.)
+ */
+exports.distinctMap = function(fKey, objects, purge) {
+  return objects.reduce(function(map, object) {
+    var value = _.isFunction(fKey)
+      ? fKey(object)
+      : object[fKey];
+
+    if (!map[value]) {
+      // This is the first item with this value
+      map[value] = [object];
+    } else {
+      map[value].push(object);
+    }
+
+    if (purge && !_.isFunction(fKey)) {
+      delete object[fKey];
+    }
+
+    return map;
+  }, {});
+};
+
 var warningTable = {
   'exec data': {
     longName: 'execution of data',
