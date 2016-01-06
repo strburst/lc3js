@@ -1,5 +1,4 @@
 var assert = require('assert');
-var _ = require('underscore');
 
 var assembler = require('../assembler.js');
 var bitutil = require('../bitutil.js');
@@ -90,7 +89,7 @@ describe('bit utilities', function() {
 
   describe('toInstruction', function() {
     // Test dissassembly for all the previously defined cases
-    _.keys(assemblerCases).forEach(function(operation) {
+    Object.keys(assemblerCases).forEach(function(operation) {
       it('should disassemble ' + operation + ' instructions', function() {
         assemblerCases[operation].forEach(function(testCase) {
           assert.deepEqual(assembler.toInstruction(testCase.binary), testCase.object,
@@ -109,7 +108,7 @@ describe('bit utilities', function() {
     var argLabelOps = { BR: true, JSR: true, LD: true, LEA: true, ST: true, STI: true };
 
     // Test assembly for all the previously defined cases
-    _.keys(assemblerCases).forEach(function(operation) {
+    Object.keys(assemblerCases).forEach(function(operation) {
       it('should assemble ' + operation + ' instructions', function() {
         assemblerCases[operation].forEach(function(testCase) {
           // Annotate this instruction with a label argument if it requires one

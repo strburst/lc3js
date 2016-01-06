@@ -1,10 +1,11 @@
 /* eslint no-console:0 */
-var _ = require('underscore');
+var isFunction = require('lodash.isfunction');
+var memoize = require('lodash.memoize');
 
 /**
  * Return the least and greatest numbers a 2's complement sequence of n bits can represent.
  */
-exports.bitRange = _.memoize(function(bits) {
+exports.bitRange = memoize(function(bits) {
   var pow = Math.pow(2, bits - 1);
   return {
     min: -pow,
@@ -31,7 +32,7 @@ exports.inBitRange = function(n, bits) {
  */
 exports.distinctMap = function(fKey, objects, purge) {
   return objects.reduce(function(map, object) {
-    var value = _.isFunction(fKey)
+    var value = isFunction(fKey)
       ? fKey(object)
       : object[fKey];
 
@@ -42,7 +43,7 @@ exports.distinctMap = function(fKey, objects, purge) {
       map[value].push(object);
     }
 
-    if (purge && !_.isFunction(fKey)) {
+    if (purge && !isFunction(fKey)) {
       delete object[fKey];
     }
 

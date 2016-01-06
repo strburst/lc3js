@@ -22,7 +22,10 @@
   },
   "homepage": "https://github.com/strburst/lc3js#readme",
   "dependencies": {
-    "underscore": "^1.8.3",
+    "lodash.invert": "^3.0.1",
+    "lodash.isfunction": "^3.0.6",
+    "lodash.memoize": "^3.0.4",
+    "lodash.transform": "^3.0.4",
     "yargs": "^3.31.0"
   },
   "devDependencies": {

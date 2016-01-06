@@ -1,4 +1,6 @@
-var _ = require('underscore');
+var invert = require('lodash.invert');
+var memoize = require('lodash.memoize');
+var transform = require('lodash.transform');
 
 var bitutil = require('./bitutil.js');
 
@@ -8,10 +10,10 @@ var instructionToOpcode = Object.freeze({
   'LEA': 0xE, 'NOT': 0x9, 'RTI': 0x8, 'ST': 0x3, 'STI': 0xB, 'STR': 0x7, 'TRAP': 0xF,
 });
 
-var opcodeToInstruction = Object.freeze(_.invert(instructionToOpcode));
+var opcodeToInstruction = Object.freeze(invert(instructionToOpcode));
 
-var instructionToMask = Object.freeze(_.mapObject(instructionToOpcode, function(code) {
-  return code << 12;
+var instructionToMask = Object.freeze(transform(instructionToOpcode, function(acc, code, name) {
+  acc[name] = code << 12;
 }));
 
 /**
@@ -146,7 +148,7 @@ function opcode(bits) {
  * This function is memoized, since it's likely to be called on the same bit patterns, e.g. when
  * executing a loop.
  */
-exports.toInstruction = _.memoize(function(bits) {
+exports.toInstruction = memoize(function(bits) {
   return bitDecoders[opcode(bits)](bits);  // Switch on the operation name
 });
 
