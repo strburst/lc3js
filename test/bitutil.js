@@ -100,14 +100,6 @@ describe('bit utilities', function() {
   // Test cases for assembly and dissasembly
   var assemblerCases = [
     {
-      binary: 0,
-      object: {
-        operation: 'BR',
-        conditionCode: { n: false, z: false, p: false },
-        offset: 0
-      },
-    },
-    {
       binary: bitutil.fromBits('0001', '110', '001', '0', '00', '010'),
       object: {
         operation: 'ADD',
@@ -141,6 +133,35 @@ describe('bit utilities', function() {
         destReg: 5,
         srcReg1: 1,
         immediate: 21,
+      },
+    },
+    {
+      binary: 0xAA,
+      object: {
+        operation: 'BR',
+        conditionCode: { n: false, z: false, p: false },
+        offset: 0xAA,
+      },
+    },
+    {
+      binary: bitutil.fromBits('1100', '000', '101', '000000'),
+      object: {
+        operation: 'JMP',
+        register: 5,
+      },
+    },
+    {
+      binary: bitutil.fromBits('0100', '1', '00010101010'),
+      object: {
+        operation: 'JSR',
+        offset: 0xAA,
+      },
+    },
+    {
+      binary: bitutil.fromBits('0100', '0', '00', '101', '000000'),
+      object: {
+        operation: 'JSR',
+        register: 5,
       },
     },
   ];
