@@ -182,9 +182,13 @@ function srcImmediateEncode(name) {
  * same).
  */
 function regLabelEncode(name) {
+  var packRegLabel = bitutil.bitPacker([
+      { name: 'register', start: 9, end: 11 },
+  ], instructionToMask[name]);
+
   return function(instruction, nextAddr, labelToAddr) {
     var offset = labelToAddr[instruction.argLabel] - nextAddr;
-    return instructionToMask[name] | instruction.moveReg | offset;
+    return packRegLabel(instruction) | offset;
   };
 }
 

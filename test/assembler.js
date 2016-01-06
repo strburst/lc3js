@@ -80,6 +80,24 @@ describe('bit utilities', function() {
         register: 5,
       },
     },
+    {
+      binary: bitutil.fromBits('0010', '101', '010101010'),
+      message: 'typical LD',
+      object: {
+        offset: 0xAA,
+        operation: 'LD',
+        register: 5,
+      },
+    },
+    {
+      binary: bitutil.fromBits('1010', '101', '010101010'),
+      message: 'typical LDI',
+      object: {
+        offset: 0xAA,
+        operation: 'LDI',
+        register: 5,
+      },
+    },
   ];
 
   // Sort individual test cases by operation tested
@@ -105,7 +123,7 @@ describe('bit utilities', function() {
     var labelToAddr = { ARGLABEL: 0x40AA };
 
     // These instructions take labels as arguments
-    var argLabelOps = { BR: true, JSR: true, LD: true, LEA: true, ST: true, STI: true };
+    var argLabelOps = { BR: true, JSR: true, LD: true, LDI: true, LEA: true, ST: true, STI: true };
 
     // Test assembly for all the previously defined cases
     Object.keys(assemblerCases).forEach(function(operation) {
