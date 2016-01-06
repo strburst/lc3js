@@ -93,10 +93,6 @@ describe('bit utilities', function() {
     });
   });
 
-  // In toBits, pass these parameters in every test (thus all offsets will be 0xAA)
-  var nextAddr = 0x4000;
-  var labelToAddr = { ARGLABEL: 0x40AA };
-
   // Test cases for assembly and dissasembly
   var assemblerCases = [
     {
@@ -171,18 +167,6 @@ describe('bit utilities', function() {
     return item.object.operation;
   }, assemblerCases);
 
-  // These instructions take labels as arguments
-  var argLabelOps = { BR: true, JSR: true, LD: true, LEA: true, ST: true, STI: true };
-
-  // Annotate test cases using instructions that have a label argument with a label
-  _.keys(assemblerCases).forEach(function(operation) {
-    if (argLabelOps[operation]) {
-      assemblerCases[operation].forEach(function(testCase) {
-        testCase.argLabel = 'ARGLABEL';
-      });
-    }
-  });
-
   describe('toInstruction', function() {
     // Test dissassembly for all the previously defined cases
     _.keys(assemblerCases).forEach(function(operation) {
@@ -195,10 +179,22 @@ describe('bit utilities', function() {
   });
 
   describe('toBits', function() {
+    // Pass these parameters in every test (thus all offsets will be 0xAA)
+    var nextAddr = 0x4000;
+    var labelToAddr = { ARGLABEL: 0x40AA };
+
+    // These instructions take labels as arguments
+    var argLabelOps = { BR: true, JSR: true, LD: true, LEA: true, ST: true, STI: true };
+
     // Test assembly for all the previously defined cases
     _.keys(assemblerCases).forEach(function(operation) {
       it('should assemble ' + operation + ' instructions', function() {
         assemblerCases[operation].forEach(function(testCase) {
+          // Annotate this instruction with a label argument if it requires one
+          var object = argLabelOps[operation]
+            ? Object.assign({}, { argLabel: 'ARGLABEL' }, testCase.object)
+            : testCase.object;
+
           assert.deepEqual(bitutil.toBits(testCase.object, nextAddr, labelToAddr), testCase.binary);
         });
       });
