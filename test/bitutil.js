@@ -97,6 +97,7 @@ describe('bit utilities', function() {
   var assemblerCases = [
     {
       binary: bitutil.fromBits('0001', '110', '001', '0', '00', '010'),
+      message: 'typical ADD (register form)',
       object: {
         operation: 'ADD',
         destReg: 6,
@@ -106,6 +107,7 @@ describe('bit utilities', function() {
     },
     {
       binary: bitutil.fromBits('0001', '101', '001', '1', '10101'),
+      message: 'typical ADD (immediate form)',
       object: {
         operation: 'ADD',
         destReg: 5,
@@ -115,6 +117,7 @@ describe('bit utilities', function() {
     },
     {
       binary: bitutil.fromBits('0101', '110', '001', '0', '00', '010'),
+      message: 'typical AND (register form)',
       object: {
         operation: 'AND',
         destReg: 6,
@@ -124,6 +127,7 @@ describe('bit utilities', function() {
     },
     {
       binary: bitutil.fromBits('0101', '101', '001', '1', '10101'),
+      message: 'typical AND (immediate form)',
       object: {
         operation: 'AND',
         destReg: 5,
@@ -133,6 +137,7 @@ describe('bit utilities', function() {
     },
     {
       binary: 0xAA,
+      message: 'typical BR',
       object: {
         operation: 'BR',
         conditionCode: { n: false, z: false, p: false },
@@ -141,6 +146,7 @@ describe('bit utilities', function() {
     },
     {
       binary: bitutil.fromBits('1100', '000', '101', '000000'),
+      message: 'typical JMP',
       object: {
         operation: 'JMP',
         register: 5,
@@ -148,6 +154,7 @@ describe('bit utilities', function() {
     },
     {
       binary: bitutil.fromBits('0100', '1', '00010101010'),
+      message: 'typical JSR',
       object: {
         operation: 'JSR',
         offset: 0xAA,
@@ -155,6 +162,7 @@ describe('bit utilities', function() {
     },
     {
       binary: bitutil.fromBits('0100', '0', '00', '101', '000000'),
+      message: 'typical JSRR',
       object: {
         operation: 'JSR',
         register: 5,
@@ -172,7 +180,8 @@ describe('bit utilities', function() {
     _.keys(assemblerCases).forEach(function(operation) {
       it('should disassemble ' + operation + ' instructions', function() {
         assemblerCases[operation].forEach(function(testCase) {
-          assert.deepEqual(bitutil.toInstruction(testCase.binary), testCase.object);
+          assert.deepEqual(bitutil.toInstruction(testCase.binary), testCase.object,
+              testCase.message);
         });
       });
     });
@@ -195,7 +204,8 @@ describe('bit utilities', function() {
             ? Object.assign({}, { argLabel: 'ARGLABEL' }, testCase.object)
             : testCase.object;
 
-          assert.deepEqual(bitutil.toBits(testCase.object, nextAddr, labelToAddr), testCase.binary);
+          assert.deepEqual(bitutil.toBits(object, nextAddr, labelToAddr), testCase.binary,
+              testCase.message);
         });
       });
     });
