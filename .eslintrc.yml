@@ -13,7 +13,7 @@ rules:
   no-else-return: 0
   # Allow global variables and arguments to be unused
   no-unused-vars: [1, {"vars": "local", "args": "none"}]
-  # Allow reassignment parameters
+  # Allow parameter reassignment (for default args without namespace pollution)
   no-param-reassign: 0
   # Disallow spaces after the function keyword
   space-before-function-paren: [2, "never"]
