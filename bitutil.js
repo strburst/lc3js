@@ -67,7 +67,7 @@ var bitPacker = exports.bitPacker = function(fields, initial) {
 // Construct tables for converting between opcodes and instruction names
 var instructionToOpcode = Object.freeze({
   'ADD': 0x1, 'AND': 0x5, 'BR': 0x0, 'JMP': 0xC, 'JSR': 0x4, 'LD': 0x2, 'LDI': 0xA, 'LDR': 0x6,
-  'LEA': 0xE, 'NOT': 0x9, 'RET': 0xC, 'RTI': 0x8, 'ST': 0x3, 'STI': 0xB, 'STR': 0x7, 'TRAP': 0xF,
+  'LEA': 0xE, 'NOT': 0x9, 'RTI': 0x8, 'ST': 0x3, 'STI': 0xB, 'STR': 0x7, 'TRAP': 0xF,
 });
 
 var opcodeToInstruction = Object.freeze(_.invert(instructionToOpcode));
@@ -143,7 +143,7 @@ function srcImmediateEncode(name) {
 
   var packImmediateForm = bitPacker([
       { name: 'destReg', start: 9, end: 11 },
-      { name: 'srcReg', start: 6, end: 8 },
+      { name: 'srcReg1', start: 6, end: 8 },
       { name: 'immediate', start: 0, end: 4 },
   ], instructionToMask[name] | (1 << 5));
 
@@ -260,12 +260,12 @@ var bitEncoders = Object.freeze({
     ], instructionToMask.BR);
 
     return function(instruction, nextAddr, labelToAddr) {
-      if (!labelToAddr[instruction.gotoLabel]) {
+      if (!labelToAddr[instruction.argLabel]) {
         return null;
       }
 
       var cc = packConditionCode(instruction.conditionCode);
-      var offset = labelToAddr[instruction.gotoLabel] - nextAddr;
+      var offset = labelToAddr[instruction.argLabel] - nextAddr;
 
       return cc | offset;
     };
@@ -273,7 +273,7 @@ var bitEncoders = Object.freeze({
   'JMP': bitPacker([
       { name: 'register', start: 6, end: 8 },
   ], instructionToMask.JMP),
-  'JSR': function() {
+  'JSR': (function() {
     var packJSRR = bitPacker([
         { name: 'register', start: 6, end: 8 },
     ], instructionToMask.JSR);
@@ -281,14 +281,14 @@ var bitEncoders = Object.freeze({
     return function(instruction, nextAddr, labelToAddr) {
       if (instruction.register) {
         return packJSRR(instruction);
-      } else if (!labelToAddr[instruction.gotoLabel]) {
+      } else if (!labelToAddr[instruction.argLabel]) {
         return null;
       } else {
-        var offset = labelToAddr[instruction.gotoLabel] - nextAddr;
+        var offset = labelToAddr[instruction.argLabel] - nextAddr;
         return instructionToMask.JSR | (1 << 11) | offset;
       }
     };
-  },
+  })(),
   'LD': regLabelEncode('LD'),
   'LDI': regLabelEncode('LDI'),
   'LDR': baseOffsetEncode('LDR'),
