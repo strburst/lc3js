@@ -71,17 +71,6 @@ function baseOffsetDecode(name) {
   };
 }
 
-/**
- * Helper function to assemble LDR, and STR instructions (their bit layouts are the same).
- */
-function baseOffsetEncode(name) {
-  return bitutil.bitPacker([
-      { name: 'moveReg', start: 9, end: 11 },
-      { name: 'baseReg', start: 6, end: 8 },
-      { name: 'offset', start: 0, end: 5 },
-  ], instructionToMask[name]);
-}
-
 var bitDecoders = Object.freeze({
   'ADD': srcImmediateDecode('ADD'),
   'AND': srcImmediateDecode('AND'),
@@ -190,6 +179,17 @@ function regLabelEncode(name) {
     var offset = labelToAddr[instruction.argLabel] - nextAddr;
     return packRegLabel(instruction) | offset;
   };
+}
+
+/**
+ * Helper function to assemble LDR, and STR instructions (their bit layouts are the same).
+ */
+function baseOffsetEncode(name) {
+  return bitutil.bitPacker([
+      { name: 'moveReg', start: 9, end: 11 },
+      { name: 'baseReg', start: 6, end: 8 },
+      { name: 'offset', start: 0, end: 5 },
+  ], instructionToMask[name]);
 }
 
 var bitEncoders = Object.freeze({
