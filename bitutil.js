@@ -43,7 +43,14 @@ exports.testBit = function(bits, index) {
  * bits for clarity.
  */
 exports.fromBits = function() {
-  return parseInt(Array.prototype.join.call(arguments, ''), 2);
+  var joined = Array.prototype.join.call(arguments, '');
+
+  if (!/^[01]+$/.test(joined)) {
+    // Input doesn't consist soley of 0s and 1s (avoid loose behavior from parseInt)
+    return NaN;
+  }
+
+  return parseInt(joined, 2);
 };
 
 /**
