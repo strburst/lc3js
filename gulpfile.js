@@ -1,6 +1,7 @@
 var eslint = require('gulp-eslint');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
+var mocha = require('gulp-mocha');
 var peg = require('gulp-peg');
 var rename = require('gulp-rename');
 
@@ -18,4 +19,10 @@ gulp.task('lint', function() {
     .pipe(eslint.failAfterError());
 });
 
-gulp.task('default', ['compile-parser', 'lint']);
+gulp.task('test', function() {
+  return gulp.src('test/*.js', { read: false })
+    // nyan is the only reporter that doesn't mix test output with other gulp messages
+    .pipe(mocha({ reporter: 'nyan' }));
+});
+
+gulp.task('default', ['compile-parser', 'lint', 'test']);

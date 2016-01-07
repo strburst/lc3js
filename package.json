@@ -33,6 +33,7 @@
     "eslint-config-airbnb": "^2.1.1",
     "gulp": "^3.9.0",
     "gulp-eslint": "^1.1.1",
+    "gulp-mocha": "^2.2.0",
     "gulp-peg": "^0.2.0",
     "gulp-rename": "^1.2.2",
     "gulp-util": "^3.0.7",
