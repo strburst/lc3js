@@ -84,8 +84,8 @@ describe('bit utilities', function() {
       binary: bitutil.fromBits('0010', '101', '010101010'),
       message: 'typical LD',
       object: {
-        offset: 0xAA,
         operation: 'LD',
+        offset: 0xAA,
         register: 5,
       },
     },
@@ -93,8 +93,27 @@ describe('bit utilities', function() {
       binary: bitutil.fromBits('1010', '101', '010101010'),
       message: 'typical LDI',
       object: {
-        offset: 0xAA,
         operation: 'LDI',
+        offset: 0xAA,
+        register: 5,
+      },
+    },
+    {
+      binary: bitutil.fromBits('0110', '101', '010', '101010'),
+      message: 'typical LDR',
+      object: {
+        operation: 'LDR',
+        moveReg: 5,
+        baseReg: 2,
+        offset: 0x2A,
+      },
+    },
+    {
+      binary: bitutil.fromBits('1110', '101', '010101010'),
+      message: 'typical LEA',
+      object: {
+        operation: 'LEA',
+        offset: 0xAA,
         register: 5,
       },
     },
