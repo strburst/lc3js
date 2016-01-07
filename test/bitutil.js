@@ -61,6 +61,29 @@ describe('bit utilities', function() {
     });
   });
 
+  describe('fromBits', function() {
+    it('should convert vararg strings to bits', function() {
+      assert.equal(bitutil.fromBits('0'), 0x0);
+      assert.equal(bitutil.fromBits('1'), 0x1);
+
+      assert.equal(bitutil.fromBits('1010'), 0xA);
+
+      assert.equal(bitutil.fromBits('0000', '0000', '0000'), 0x000);
+      assert.equal(bitutil.fromBits('1111', '1111', '1111'), 0xFFF);
+    });
+
+    it('should give NaN for bad inputs', function() {
+      assert(isNaN(bitutil.fromBits()));
+      assert(isNaN(bitutil.fromBits('')));
+      assert(isNaN(bitutil.fromBits('', '', '')));
+
+      assert(isNaN(bitutil.fromBits('1', '0', 'foo')));
+      assert(isNaN(bitutil.fromBits('277', '011', '449')));
+
+      assert(isNaN(bitutil.fromBits('foooooooobaaaaaaarrrrrrr')));
+    });
+  });
+
   describe('bitPacker', function() {
     it('should pack single-bit fields properly', function() {
       var pack = bitutil.bitPacker([
