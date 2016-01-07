@@ -34,7 +34,7 @@ exports.fetchBits = function(bits, from, to) {
 /**
  * Fetch only the specified bit. Equivalent to fetchBits(value, bit, bit).
  */
-var testBit = exports.testBit = function(bits, index) {
+exports.testBit = function(bits, index) {
   return (bits >> index) & 0x1;
 };
 
@@ -51,7 +51,7 @@ exports.fromBits = function() {
  * function that bitpacks the properties in the object passed as an argument. initial is the
  * bitstring to start from; if not given, it is zero.
  */
-var bitPacker = exports.bitPacker = function(fields, initial) {
+exports.bitPacker = function(fields, initial) {
   return function(values) {
     return fields.reduce(function(acc, field) {
       var rangeLen = field.end - field.start + 1;
