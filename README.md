@@ -1,7 +1,7 @@
 # lc3js
 
-[![Build Status](http://img.shields.io/travis/strburst/lc3js.svg)](https://travis-ci.org/strburst/lc3js)
-[![Dependency Status](https://img.shields.io/david/strongloop/express.svg)](https://david-dm.org/strburst/lc3js)
+[![Build Status](https://travis-ci.org/strburst/lc3js.svg?branch=master)](https://travis-ci.org/strburst/lc3js)
+[![Dependency Status](https://david-dm.org/strburst/lc3js.svg)](https://david-dm.org/strburst/lc3js)
 [![License](https://img.shields.io/github/license/strburst/lc3js.svg)](https://github.com/strburst/lc3js/blob/master/LICENSE)
 
 This is an implementation of LC-3 assembly written in Javascript. It's still under construction.
