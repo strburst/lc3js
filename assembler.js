@@ -6,8 +6,8 @@ var bitutil = require('./bitutil.js');
 
 // Construct tables for converting between opcodes and instruction names
 var instructionToOpcode = Object.freeze({
-  'ADD': 0x1, 'AND': 0x5, 'BR': 0x0, 'JMP': 0xC, 'JSR': 0x4, 'LD': 0x2, 'LDI': 0xA, 'LDR': 0x6,
-  'LEA': 0xE, 'NOT': 0x9, 'RTI': 0x8, 'ST': 0x3, 'STI': 0xB, 'STR': 0x7, 'TRAP': 0xF,
+  ADD: 0x1, AND: 0x5, BR: 0x0, JMP: 0xC, JSR: 0x4, LD: 0x2, LDI: 0xA, LDR: 0x6, LEA: 0xE, NOT: 0x9,
+  RTI: 0x8, ST: 0x3, STI: 0xB, STR: 0x7, TRAP: 0xF,
 });
 
 var opcodeToInstruction = Object.freeze(invert(instructionToOpcode));
@@ -72,9 +72,9 @@ function baseOffsetDecode(name) {
 }
 
 var bitDecoders = Object.freeze({
-  'ADD': srcImmediateDecode('ADD'),
-  'AND': srcImmediateDecode('AND'),
-  'BR': function(bits) {
+  ADD: srcImmediateDecode('ADD'),
+  AND: srcImmediateDecode('AND'),
+  BR: function(bits) {
     return {
       operation: 'BR',
       conditionCode: {
@@ -85,13 +85,13 @@ var bitDecoders = Object.freeze({
       offset: bitutil.fetchBits(bits, 0, 8),
     };
   },
-  'JMP': function(bits) {
+  JMP: function(bits) {
     return {
       operation: 'JMP',
       register: bitutil.fetchBits(bits, 6, 8),
     };
   },
-  'JSR': function(bits) {
+  JSR: function(bits) {
     if (bitutil.testBit(bits, 11)) {
       // True JSR
       return {
@@ -106,11 +106,11 @@ var bitDecoders = Object.freeze({
       };
     }
   },
-  'LD': regOffsetDecode('LD'),
-  'LDI': regOffsetDecode('LDI'),
-  'LDR': baseOffsetDecode('LDR'),
-  'LEA': regOffsetDecode('LEA'),
-  'NOT': function(bits) {
+  LD: regOffsetDecode('LD'),
+  LDI: regOffsetDecode('LDI'),
+  LDR: baseOffsetDecode('LDR'),
+  LEA: regOffsetDecode('LEA'),
+  NOT: function(bits) {
     return {
       operation: 'NOT',
       destReg: bitutil.fetchBits(bits, 9, 11),
@@ -118,9 +118,9 @@ var bitDecoders = Object.freeze({
     };
   },
   // Omitted: RTI
-  'ST': regOffsetDecode('ST'),
-  'STI': regOffsetDecode('STI'),
-  'STR': baseOffsetDecode('STR'),
+  ST: regOffsetDecode('ST'),
+  STI: regOffsetDecode('STI'),
+  STR: baseOffsetDecode('STR'),
   // Omitted: TRAP
 });
 
@@ -193,9 +193,9 @@ function baseOffsetEncode(name) {
 }
 
 var bitEncoders = Object.freeze({
-  'ADD': srcImmediateEncode('ADD'),
-  'AND': srcImmediateEncode('AND'),
-  'BR': (function() {
+  ADD: srcImmediateEncode('ADD'),
+  AND: srcImmediateEncode('AND'),
+  BR: (function() {
     // Wrapping ensures that bitPacker only generates a new function once
     var packConditionCode = bitutil.bitPacker([
       { name: 'n', start: 11, end: 11 },
@@ -214,10 +214,10 @@ var bitEncoders = Object.freeze({
       return cc | offset;
     };
   })(),
-  'JMP': bitutil.bitPacker([
+  JMP: bitutil.bitPacker([
       { name: 'register', start: 6, end: 8 },
   ], instructionToMask.JMP),
-  'JSR': (function() {
+  JSR: (function() {
     var packJSRR = bitutil.bitPacker([
         { name: 'register', start: 6, end: 8 },
     ], instructionToMask.JSR);
@@ -233,18 +233,18 @@ var bitEncoders = Object.freeze({
       }
     };
   })(),
-  'LD': regLabelEncode('LD'),
-  'LDI': regLabelEncode('LDI'),
-  'LDR': baseOffsetEncode('LDR'),
-  'LEA': regLabelEncode('LEA'),
-  'NOT': bitutil.bitPacker([
+  LD: regLabelEncode('LD'),
+  LDI: regLabelEncode('LDI'),
+  LDR: baseOffsetEncode('LDR'),
+  LEA: regLabelEncode('LEA'),
+  NOT: bitutil.bitPacker([
       { name: 'destReg', start: 9, end: 11 },
       { name: 'srcReg', start: 6, end: 8 },
   ], instructionToMask.NOT | ~(~0 << 6)),
   // Omitted: RTI
-  'ST': regLabelEncode('ST'),
-  'STI': regLabelEncode('STI'),
-  'STR': baseOffsetEncode('STR'),
+  ST: regLabelEncode('ST'),
+  STI: regLabelEncode('STI'),
+  STR: baseOffsetEncode('STR'),
   // Omitted: TRAP
 });
 

@@ -10,8 +10,8 @@ describe('miscellaneous utilities', function() {
         { name: 'Bob', item: 'muffins', quantity: 5 },
         { name: 'Carol', item: 'muffins', quantity: 7 },
       ]), {
-        'cookies': [{ name: 'Alice', item: 'cookies', quantity: 12 }],
-        'muffins': [
+        cookies: [{ name: 'Alice', item: 'cookies', quantity: 12 }],
+        muffins: [
           { name: 'Bob', item: 'muffins', quantity: 5 },
           { name: 'Carol', item: 'muffins', quantity: 7 },
         ],
@@ -22,8 +22,8 @@ describe('miscellaneous utilities', function() {
         { name: 'Bob', item: 'muffins', quantity: 5 },
         { name: 'Carol', item: 'muffins', quantity: 7 },
       ], true), {
-        'cookies': [{ name: 'Alice', quantity: 12 }],
-        'muffins': [
+        cookies: [{ name: 'Alice', quantity: 12 }],
+        muffins: [
           { name: 'Bob', quantity: 5 },
           { name: 'Carol', quantity: 7 },
         ],
