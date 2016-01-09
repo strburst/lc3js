@@ -6,3 +6,8 @@ node_js:
 before_script:
   - npm install -g gulp
 script: gulp
+
+# Cache npm dependencies
+cache:
+  directories:
+    - node_modules
