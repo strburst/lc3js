@@ -21,8 +21,8 @@ gulp.task('lint', function() {
 
 gulp.task('test', ['compile-parser'], function() {
   return gulp.src('test/*.js', { read: false })
-    // nyan is the only reporter that doesn't mix test output with other gulp messages
-    .pipe(mocha({ reporter: 'nyan' }));
+    // nyan doesn't mix test output with other messages, but looks terrible in CI output
+    .pipe(mocha({ reporter: process.env.CI ? 'spec' : 'nyan' }));
 });
 
 gulp.task('default', ['compile-parser', 'lint', 'test']);
