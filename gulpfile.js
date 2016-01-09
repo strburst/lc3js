@@ -19,7 +19,7 @@ gulp.task('lint', function() {
     .pipe(eslint.failAfterError());
 });
 
-gulp.task('test', function() {
+gulp.task('test', ['compile-parser'], function() {
   return gulp.src('test/*.js', { read: false })
     // nyan is the only reporter that doesn't mix test output with other gulp messages
     .pipe(mocha({ reporter: 'nyan' }));
