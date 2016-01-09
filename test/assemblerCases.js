@@ -115,4 +115,41 @@ module.exports = [
       register: 5,
     },
   },
+  {
+    binary: bitutil.fromBits('1001', '101', '010', '111111'),
+    message: 'typical NOT',
+    object: {
+      operation: 'NOT',
+      destReg: 5,
+      srcReg: 2,
+    },
+  },
+  {
+    binary: bitutil.fromBits('0011', '101', '010101010'),
+    message: 'typical ST',
+    object: {
+      operation: 'ST',
+      offset: 0xAA,
+      register: 5,
+    },
+  },
+  {
+    binary: bitutil.fromBits('1011', '101', '010101010'),
+    message: 'typical STI',
+    object: {
+      operation: 'STI',
+      offset: 0xAA,
+      register: 5,
+    },
+  },
+  {
+    binary: bitutil.fromBits('0111', '101', '010', '101010'),
+    message: 'typical STR',
+    object: {
+      operation: 'STR',
+      moveReg: 5,
+      baseReg: 2,
+      offset: 0x2A,
+    },
+  },
 ];
