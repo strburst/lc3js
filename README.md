@@ -28,4 +28,4 @@ Using gulp, you can compile the parser (`gulp compile-parser`), run the linter (
 $ gulp
 ```
 
-Consult `gulpfile.js` for more details.
+Consult [`gulpfile.js`](https://github.com/strburst/lc3js/blob/master/gulpfile.js) for more details.
