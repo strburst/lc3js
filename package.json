@@ -2,7 +2,7 @@
   "name": "lc3js",
   "version": "0.0.1",
   "description": "Emulator for LC3 assembly",
-  "main": "index.js",
+  "bin": "cli.js",
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha"
   },
