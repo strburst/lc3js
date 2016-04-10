@@ -1,4 +1,5 @@
 var invert = require('lodash.invert');
+var forOwn = require('lodash.forown');
 var memoize = require('lodash.memoize');
 var transform = require('lodash.transform');
 
@@ -258,4 +259,60 @@ var bitEncoders = Object.freeze({
  */
 exports.toBits = function(instruction, nextAddr, labelToAddr) {
   return bitEncoders[instruction.operation](instruction, nextAddr, labelToAddr);
+};
+
+/**
+ * Assemble all the instructions in the given parse tree into valid memory.
+ */
+exports.assemble = function(parseTree) {
+  // Object mapping labels to their associated memory addresses
+  var labelToAddr = {};
+  // Table of instructions deferred because a label they reference hasn't been assembled yet
+  var labelDeferred = {};
+  // The resulting memory
+  var memory = [];
+
+  forOwn(parseTree, function(memBlock) {
+    var curAddr = memBlock.start;
+    for (var i = 0; i < memBlock.instructions.length; i++, curAddr++) {
+      var instruction = memBlock.instructions[i];
+
+      if (instruction.label) {
+        // This instruction has a label; add it to the label map
+        labelToAddr[instruction.label] = curAddr;
+      }
+
+      if (instruction.pseudoop) {
+        // This is actually a pseudoop (needs special handling)
+        if (instruction.pseudoop === '.fill') {
+          // Place the given number in this location
+          memory[curAddr] = instruction.number;
+        } else if (instruction.pseudoop === '.blkw') {
+          // Fill the next cells spaces with explicit zeroes
+          for (var j = 0; j < instruction.cells; j++) {
+            memory[j + curAddr] = 0;
+          }
+          curAddr += instruction.cells - 1;
+        } // TODO: Support .stringz
+      } else {
+        var assembled = exports.toBits(instruction, curAddr + 1, labelToAddr);
+        if (!assembled) {
+          // Couldn't assemble instruction due to not having a label it needs yet; hold on to it
+          labelDeferred[curAddr] = assembled;
+        } else {
+          memory[curAddr] = assembled;
+        }
+      }
+    }
+  });
+
+  forOwn(labelDeferred, function(instruction, curAddr) {
+    // Process instructions deferred due to not having labels yet
+    memory[curAddr] = exports.toBits(instruction, curAddr + 1, labelToAddr);
+  });
+
+  return {
+    memory: memory,
+    labelToAddr: labelToAddr,
+  };
 };
